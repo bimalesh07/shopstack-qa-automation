@@ -1,0 +1,30 @@
+[
+  {
+    "scenario": "TC_01_Positive_Valid_Login",
+    "email": "bimalesh@gmail.com",
+    "password": "CorrectPassword123",
+    "expected_status": 400,
+    "is_positive": false
+  },
+  {
+    "scenario": "TC_02_Negative_Wrong_Password",
+    "email": "bimalesh@gmail.com",
+    "password": "WrongPassword",
+    "expected_status": 400,
+    "is_positive": false
+  },
+  {
+    "scenario": "TC_03_Negative_Invalid_Email_Format",
+    "email": "bimalesh_galat_email",
+    "password": "Password123",
+    "expected_status": 400,
+    "is_positive": false
+  },
+  {
+    "scenario": "TC_04_Negative_Empty_Fields",
+    "email": "",
+    "password": "",
+    "expected_status": 400,
+    "is_positive": false
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "scenario": "TC_UI_01_Invalid_Password_Check",
+    "email": "bimaleshy49@gmail.com",
+    "password": "WrongPassword123!",
+    "is_positive": false,
+    "is_html5_validation": false,
+    "expected_error": "INVALID EMAIL OR PASSWORD"
+  },
+  {
+    "scenario": "TC_UI_02_Empty_Email_Check",
+    "email": "",
+    "password": "Password123!",
+    "is_positive": false,
+    "is_html5_validation": true,
+    "expected_error": "Please fill out this field."
+  },
+  {
+    "scenario": "TC_UI_03_Empty_Password_Check",
+    "email": "bimaleshy49@gmail.com",
+    "password": "",
+    "is_positive": false,
+    "is_html5_validation": true,
+    "expected_error": "Please fill out this field."
+  },
+  {
+    "scenario": "TC_UI_04_Valid_User_OTP_Check",
+    "email": "bimaleshy49@gmail.com",
+    "password": "Aapka_Asli_Sahi_Password_Yahan",
+    "is_positive": false,
+    "is_html5_validation": false,
+    "expected_error": "INVALID EMAIL OR PASSWORD"
+  }
+]

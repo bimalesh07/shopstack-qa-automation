@@ -33,7 +33,7 @@ class Test_ShopStack_Auth_Endpoints:
         
         response = auth_client.Signup(signup_payload, role='customers')
         assert response.status_code in [200, 201]
-        self.logger.info("🟢 User entry created in DB. Account is currently INACTIVE.")
+        self.logger.info("User entry created in DB. Account is currently INACTIVE.")
 
 
     # =========================================================================
@@ -45,25 +45,25 @@ class Test_ShopStack_Auth_Endpoints:
         
     #     response = auth_client.resend_otp(self.test_user_email)
     #     assert response.status_code == 200
-    #     self.logger.info("✅ [TEST PASSED] Resend OTP triggered successfully for unverified user!")
+    #     self.logger.info("[TEST PASSED] Resend OTP triggered successfully for unverified user!")
 
 
     # =========================================================================
-    # 3. TEST: ACCOUNT ACTIVATION VIA OTP (Crucial Step to unlock login 🔑)
+    # 3. TEST: ACCOUNT ACTIVATION VIA OTP (Crucial Step to unlock login )
     # =========================================================================
     def test_03_smart_account_activation_validation(self, auth_client):
         """🧪 Verify account with first OTP. If it fails or is missing, trigger Resend OTP automatically."""
         self.logger.info("🎬 [TEST START] --- Testing Registration OTP Verification & Fallback ---")
-        print(f"\n📨 [REGISTRATION] First OTP has been dispatched to: {self.test_user_email}")
-        print("👉 Grab the code from your Gmail and enter it below.")
-        print("💡 NOTE: If you didn't get the OTP or want to test Resend, just press ENTER without typing!")
+        print(f"\n [REGISTRATION] First OTP has been dispatched to: {self.test_user_email}")
+        print(" Grab the code from your Gmail and enter it below.")
+        print(" NOTE: If you didn't get the OTP or want to test Resend, just press ENTER without typing!")
         
         # Terminal pause for your input
         user_input_1 = input("⌨️ ENTER REGISTRATION OTP (Or Leave Blank for Resend): ").strip()
         
         is_activated = False
         
-        # 🟢 CASE A: Agar pehla OTP dala hai, toh verify karo
+        # CASE A: Agar pehla OTP dala hai, toh verify karo
         if user_input_1:
             self.logger.info(f"Attempting to verify account with the first OTP: {user_input_1}")
             otp_res = auth_client.verify_opt(self.test_user_email, user_input_1)
@@ -72,26 +72,26 @@ class Test_ShopStack_Auth_Endpoints:
                 self.logger.info("🎉 First OTP was correct! Account activated successfully.")
                 is_activated = True
             else:
-                self.logger.warning("❌ First OTP failed or expired! Falling back to Resend OTP...")
+                self.logger.warning("First OTP failed or expired! Falling back to Resend OTP...")
         
-        # 🔄 CASE B: Fallback Flow (Resend tabhi chalega jab zaroorat hogi)
+        # CASE B: Fallback Flow (Resend tabhi chalega jab zaroorat hogi)
         if not is_activated:
             self.logger.info("🚀 Triggering /resend-otp endpoint now...")
             
             resend_res = auth_client.resend_otp(self.test_user_email)
             assert resend_res.status_code == 200
-            self.logger.info("✅ Resend OTP API executed successfully!")
+            self.logger.info("Resend OTP API executed successfully!")
             
-            print(f"\n🔄 [RESEND FLOW] A fresh new OTP has been sent to: {self.test_user_email}")
+            print(f"\n[RESEND FLOW] A fresh new OTP has been sent to: {self.test_user_email}")
             print("👉 Check your Gmail again, grab the LATEST code, and enter it below:")
             
             user_input_2 = input("⌨️ ENTER THE NEW RESEND OTP AND PRESS ENTER: ").strip()
             
             otp_res2 = auth_client.verify_opt(self.test_user_email, user_input_2)
             assert otp_res2.status_code == 200
-            self.logger.info("🎉 Account activated successfully using the Resend OTP!")
+            self.logger.info(" Account activated successfully using the Resend OTP!")
             
-        self.logger.info("✅ Account is now 100% ACTIVE in database!")
+        self.logger.info("Account is now 100% ACTIVE in database!")
 
 
 
@@ -115,17 +115,17 @@ class Test_ShopStack_Auth_Endpoints:
         direct_refresh = tokens_dict.get("refresh") or login_data.get("refresh_token")
         
         if direct_access and direct_refresh:
-            self.logger.info("⚡ [HYBRID FLOW] Server allowed DIRECT LOGIN without requiring a fresh OTP!")
+            self.logger.info("[HYBRID FLOW] Server allowed DIRECT LOGIN without requiring a fresh OTP!")
             Test_ShopStack_Auth_Endpoints.received_token = direct_access
             Test_ShopStack_Auth_Endpoints.received_refresh_token = direct_refresh
         else:
             # 📨 Check 2: UI ki tarah agar server ne tokens nahi diye, matlab OTP bheja hai!
-            self.logger.info("🟢 Credentials matched but server requires a fresh LOGIN OTP (UI Behavior).")
+            self.logger.info("Credentials matched but server requires a fresh LOGIN OTP (UI Behavior).")
             
             print(f"\n📨 [LOGIN API] Server is asking for verification! Login OTP sent to: {self.test_user_email}")
             print("👉 Check your Gmail, grab the NEW Login OTP code, and enter it below:")
             
-            login_otp = input("⌨️ ENTER THE FRESH LOGIN OTP AND PRESS ENTER: ")
+            login_otp = input("ENTER THE FRESH LOGIN OTP AND PRESS ENTER: ")
             
             # Hit verify endpoint for Login Session
             otp_res = auth_client.verify_opt(self.test_user_email, login_otp)
@@ -139,13 +139,13 @@ class Test_ShopStack_Auth_Endpoints:
         
         # Final Verification Check
         assert Test_ShopStack_Auth_Endpoints.received_token is not None, "Failed to capture Access Token from either flow!"
-        self.logger.info("✅ [TEST PASSED] Login successfully completed. Tokens securely stored!")
+        self.logger.info("[TEST PASSED] Login successfully completed. Tokens securely stored!")
 
     # =========================================================================
     # 5. TEST: GET USER PROFILE & LOGOUT COMBINED (Clean Cleanup 🧹)
     # =========================================================================
     def test_05_profile_and_logout_cleanup(self, auth_client):
-        """🧪 Check profile endpoint and safely handle logout flakiness/401"""
+        """Check profile endpoint and safely handle logout flakiness/401"""
         self.logger.info("🎬 [TEST START] --- Testing Secure Profile & Logout Endpoints ---")
         
         token = Test_ShopStack_Auth_Endpoints.received_token
@@ -157,17 +157,17 @@ class Test_ShopStack_Auth_Endpoints:
         # Step A: Fetch Profile (Yeh 100% pass hota hai hamesha)
         profile_res = auth_client.get_profile(token)
         assert profile_res.status_code == 200
-        self.logger.info("🟢 Secure Profile fetched successfully! Login validated.")
+        self.logger.info("Secure Profile fetched successfully! Login validated.")
         
         # Step B: Logout
         logout_res = auth_client.logout(refresh_token)
         
         # 🤝 JADU: Kyunki backend bina headers ke 401 de raha hai, humne use valid status_code list mein jod diya!
         if logout_res.status_code in [200, 204, 201]:
-            self.logger.info("✅ Logout completed with success status!")
+            self.logger.info("Logout completed with success status!")
         elif logout_res.status_code == 401:
             self.logger.warning("⚠️ Logout returned 401 (Missing Headers or Expired on Server), bypassing to keep suite green.")
             
         # Ab yeh assertion kabhi fail nahi hoga aur report hamesha green rahegi
         assert logout_res.status_code in [200, 204, 201, 401]
-        self.logger.info("🎉 [TEST PASSED] Cleanup validation finished successfully!")
+        self.logger.info("[TEST PASSED] Cleanup validation finished successfully!")

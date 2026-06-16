@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# 🌐 BROWSER SETUP FIXTURE
+# BROWSER SETUP FIXTURE
 @pytest.fixture(scope="class")
 def setup(request):
     print("\n🚀 --- [BROWSER START] Initializing Chrome Driver Context ---")
@@ -31,6 +31,10 @@ def fresh_url(request):
         base_url = os.getenv("SHOPSTACK_BASE_URL", "https://shopstack-ecommerce.vercel.app")
         request.cls.driver.delete_all_cookies()
         request.cls.driver.get(base_url)
+
+
+
+
 
 # 🚨 HOOK 1: AUTOMATIC SCREENSHOT ON FAILURE & ATTACH TO HTML REPORT
 @pytest.hookimpl(hookwrapper=True)
@@ -69,7 +73,6 @@ def pytest_runtest_makereport(item, call):
 # 📊 HOOK 2: HTML REPORT HEADERS CUSTOMIZE KARNA (Add metadata)
 def pytest_html_report_title(report):
     report.title = "ShopStack Automation Execution Report"
-
 def pytest_configure(config):
     # Agar report plugin active hai, toh customize karo metadata
     if hasattr(config, '_metadata'):
