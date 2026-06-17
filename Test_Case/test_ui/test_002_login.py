@@ -4,6 +4,7 @@ import time
 from Test_Case.basetest import BaseTest
 from PageObjects.LoginPage import LoginPage
 from Utilities.customLogger import LogGen
+import pytest
 
 class Test_002_Direct_Login(BaseTest):
     logger = LogGen.loggen()
@@ -30,6 +31,7 @@ class Test_002_Direct_Login(BaseTest):
         assert lp.is_logout_button_visible() == False
         self.logger.info("🎉 PASSED: SYSTEM SUCCESSFULLY blocked the unauthorized access.")
     
+    @pytest.mark.skip(reason="Skipping manual OTP input in Jenkins")
     def test_02_direct_login_valid(self):
         self.logger.info("*************** STARTING VALID OTP LOGIN TEST ***************")
         lp = LoginPage(self.driver)

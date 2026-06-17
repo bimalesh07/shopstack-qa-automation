@@ -42,7 +42,7 @@ pipeline {
                     :: Recreating the exact .env file with Windows Batch safety quotes
                     echo SHOPSTACK_BASE_URL=https://shop-stack-ecommerce.vercel.app/ > .env
                     echo SHOPSTACK_DB_HOST=localhost >> .env
-                    echo SHOPSTACK_DB_USER=root >> .env
+                    echo DB_USER=neondb_owner >> .env
                     echo SHOPSTACK_DB_PASS="%SECRET_LOCAL_DB_PASS%" >> .env
                     echo CUSTOMER_NAME="Bimalesh Kumar" >> .env
                     echo CUSTOMER_EMAIL=bimaleshy49@gmail.com >> .env
