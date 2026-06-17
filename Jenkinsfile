@@ -19,6 +19,7 @@ pipeline {
 
     // 🔑 Safely importing hidden credentials from Jenkins UI into environment variables
     environment {
+        PYTHONIOENCODING     = 'utf-8'
         SECRET_LOCAL_DB_PASS = credentials('SHOPSTACK_DB_PASS_SECRET')
         SECRET_NEON_DB_PASS  = credentials('NEON_DB_PASS_SECRET')
         SECRET_CUST_PASS      = credentials('CUSTOMER_PASS_SECRET')
