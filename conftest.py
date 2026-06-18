@@ -1,41 +1,26 @@
+# 👉 File Location: conftest.py (Main Project Root Folder - Sabse Bahar)
 import os
 import pytest
-from selenium import webdriver
-from dotenv import load_dotenv
+import pytest_html
 
-load_dotenv()
+# =====================================================================================
+# 🎨 GLOBAL HOOK: HTML REPORT HEADERS & METADATA CUSTOMIZATION (Sabke Liye Common)
+# =====================================================================================
+def pytest_html_report_title(report):
+    """Pure project ki report ka master title"""
+    report.title = "ShopStack Automation Execution Report"
 
-@pytest.fixture(scope="class")
-def setup(request):
-    print("Opening Chrome Broswer")
-    
-    options = webdriver.ChromeOptions()
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-extensions")
-
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
-
-    # get a acess Baseclass
-    if request.cls is not None:
-        request.cls.driver = driver
-    
-    yield driver
-
-    print("Broswers window  close after class completed")
-
-
-# need Fresh url so here remove cokies
-
-@pytest.fixture(scope="function", autouse=True)
-def fresh_url(request):
-    if hasattr(request.cls, 'driver'):
-        base_url = os.getenv("SHOPSTACK_BASE_URL", "https://shopstack-ecommerce.vercel.app")
-        print("Fresh url cleaing seeion cookies and hitting Fresh Url")
-        request.cls.driver.delete_all_cookies()
-        request.cls.driver.get(base_url)
-
-
-
+def pytest_configure(config):
+    """HTML Report ke metadata dashboard ko customize karna"""
+    if hasattr(config, '_metadata'):
+        config._metadata['Project Name'] = 'ShopStack E-Commerce'
+        config._metadata['Tester Name'] = 'Bimalesh Kumar'
+        config._metadata['Environment'] = 'QA / Testing'
+        
+        # ❌ REPORT SE FALTU KACHRA METADATA HATANE KE LIYE
+        config._metadata.pop('JAVA_HOME', None)
+        config._metadata.pop('Plugins', None)
+        config._metadata.pop('Packages', None)
+        config._metadata.pop('Platform', None)
 
 

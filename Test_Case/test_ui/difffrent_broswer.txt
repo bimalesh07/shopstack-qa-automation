@@ -1,0 +1,26 @@
+import pytest
+from selenium import webdriver
+
+def pytest_addoption(parser):
+    # Yeh terminal se --browser uthane ke liye hai
+    parser.addoption("--browser", default="chrome", help="Browser options: chrome, edge, firefox")
+
+@pytest.fixture
+def setup(request):
+    browser_name = request.config.getoption("--browser").lower()
+    
+    if browser_name == "chrome":
+        driver = webdriver.Chrome()
+    elif browser_name == "edge":
+        driver = webdriver.Edge()
+    elif browser_name == "firefox":
+        driver = webdriver.Firefox()
+        
+    driver.maximize_window()
+    yield driver
+    driver.quit()
+
+"""comand"""
+pytest Test_Case/test_ui/ --browser edge
+# Ya fir Firefox ke liye:
+pytest Test_Case/test_ui/ --browser firefox

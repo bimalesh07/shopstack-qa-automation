@@ -18,7 +18,7 @@ pipeline {
         )
     }
 
-    // 🔑 Jenkins ke dashboard se chhupe huye passwords utha kar yahan variables mein daal rahe hain
+    //Jenkins ke dashboard se chhupe huye passwords utha kar yahan variables mein daal rahe hain
     environment {
         PYTHONIOENCODING     = 'utf-8' // Emojis ke crash ko rokne ke liye encoding set ki hai
         SECRET_LOCAL_DB_PASS = credentials('SHOPSTACK_DB_PASS_SECRET')
@@ -57,7 +57,7 @@ pipeline {
                     echo DB_PASSWORD="%SECRET_NEON_DB_PASS%" >> .env
                     echo DB_PORT=5432 >> .env
                     
-                    :: 🔐 UI aur API login ke liye baki bache credentials
+                    ::UI aur API login ke liye baki bache credentials
                     echo CUSTOMER_NAME="Bimalesh Kumar" >> .env
                     echo CUSTOMER_EMAIL=bimaleshy49@gmail.com >> .env
                     echo CUSTOMER_PASSWORD="%SECRET_CUST_PASS%" >> .env

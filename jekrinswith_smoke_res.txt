@@ -1,0 +1,114 @@
+pipeline {
+    agent any
+    
+    parameters {
+        // 1. Folder chunnne ke liye dropdown
+        choice(
+            name: 'TEST_TYPE', 
+            choices: ['ALL', 'API', 'DATABASE', 'UI', 'SINGLE_FILE'], 
+            description: 'Kona sa test folder chalana hai?'
+        )
+        // 2. Naya Dropdown: Smoke ya Regression filter karne ke liye
+        choice(
+            name: 'TEST_SUITE', 
+            choices: ['ALL', 'SMOKE', 'REGRESSION'], 
+            description: 'Kaunsa suite chalana hai (Markers)?'
+        )
+        // 3. Naya Dropdown: UI Browser select karne ke liye
+        choice(
+            name: 'BROWSER', 
+            choices: ['chrome', 'edge', 'firefox'], 
+            description: 'UI tests ke liye browser chuno:'
+        )
+        string(
+            name: 'SPECIFIC_FILE', 
+            defaultValue: '', 
+            description: 'SINGLE_FILE ke liye keyword daalo.'
+        )
+    }
+
+    environment {
+        PYTHONIOENCODING     = 'utf-8'
+        SECRET_LOCAL_DB_PASS = credentials('SHOPSTACK_DB_PASS_SECRET')
+        SECRET_NEON_DB_PASS  = credentials('NEON_DB_PASS_SECRET')
+        SECRET_CUST_PASS      = credentials('CUSTOMER_PASS_SECRET')
+        SECRET_VEND_PASS      = credentials('VENDOR_PASS_SECRET')
+        SECRET_API_PASS       = credentials('API_TEST_PASS_SECRET')
+    }
+
+    stages {
+        stage('1. Environment Setup & Recreate .env') {
+            steps {
+                bat '''
+                    if not exist .venv (python -m venv .venv)
+                    call .venv\\Scripts\\activate
+                    pip install -r requirements.txt
+                    
+                    echo SHOPSTACK_BASE_URL=https://shop-stack-ecommerce.vercel.app/ > .env
+                    echo SHOPSTACK_DB_HOST=localhost >> .env
+                    echo SHOPSTACK_DB_PASS="%SECRET_LOCAL_DB_PASS%" >> .env
+                    echo DB_HOST=ep-snowy-sea-ap0xzxvv-pooler.c-7.us-east-1.aws.neon.tech >> .env
+                    echo DB_USER=neondb_owner >> .env
+                    echo DB_NAME=neondb >> .env
+                    echo DB_PASSWORD="%SECRET_NEON_DB_PASS%" >> .env
+                    echo DB_PORT=5432 >> .env
+                    echo CUSTOMER_NAME="Bimalesh Kumar" >> .env
+                    echo CUSTOMER_EMAIL=bimaleshy49@gmail.com >> .env
+                    echo CUSTOMER_PASSWORD="%SECRET_CUST_PASS%" >> .env
+                    echo VENDOR_PASSWORD="%SECRET_VEND_PASS%" >> .env
+                    echo API_BASE_URL="https://shopstack-ecommerce-1.onrender.com/api" >> .env
+                    echo API_TEST_PASSWORD="%SECRET_API_PASS%" >> .env
+                '''
+            }
+        }
+
+        stage('2. Smart Execution Stage') {
+            steps {
+                script {
+                    def activateVenv = "call .venv\\Scripts\\activate && "
+                    
+                    // 🛠️ Dynamic Marker String banana (-m smoke ya -m regression)
+                    def markerCmd = ""
+                    if (params.TEST_SUITE != 'ALL') {
+                        markerCmd = " -m ${params.TEST_SUITE.toLowerCase()}"
+                    }
+                    
+                    // 🛠️ Dynamic Browser String banana (--browser chrome/edge)
+                    def browserCmd = " --browser ${params.BROWSER}"
+                    
+                    // 1. ALL
+                    if (params.TEST_TYPE == 'ALL') {
+                        bat "${activateVenv} pytest${markerCmd}${browserCmd} --html=target/reports/complete_report.html"
+                    } 
+                    // 2. API (Isme browser ki jarurat nahi hoti)
+                    else if (params.TEST_TYPE == 'API') {
+                        bat "${activateVenv} pytest Test_Case/test_api/${markerCmd} --html=target/reports/api_report.html"
+                    } 
+                    // 3. DATABASE (Isme bhi browser nahi chahiye)
+                    else if (params.TEST_TYPE == 'DATABASE') {
+                        bat "${activateVenv} pytest Test_Case/test_database/${markerCmd} --html=target/reports/db_report.html"
+                    } 
+                    // 4. UI (Isme marker aur browser dono chalenge)
+                    else if (params.TEST_TYPE == 'UI') {
+                        bat "${activateVenv} pytest Test_Case/test_ui/${markerCmd}${browserCmd} --html=target/reports/ui_report.html"
+                    } 
+                    // 5. SINGLE_FILE
+                    else if (params.TEST_TYPE == 'SINGLE_FILE') {
+                        if (params.SPECIFIC_FILE == '') {
+                            error("❌ Box khali hai bhai!")
+                        } else {
+                            bat "${activateVenv} pytest -k ${params.SPECIFIC_FILE}${markerCmd}${browserCmd} --html=target/reports/single_file_report.html"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            bat 'if exist .env del .env'
+            archiveArtifacts artifacts: 'target/reports/*.html', fingerprint: true, allowEmptyArchive: true
+        }
+    }
+}
