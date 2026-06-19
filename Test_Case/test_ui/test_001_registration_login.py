@@ -3,7 +3,7 @@ import time
 import random
 import pytest
 
-from Test_Case.basetest import BaseTest
+from .basetest import BaseTest
 from PageObjects.RegistrationPage import RegistrationPage
 from Utilities.customLogger import LogGen
 

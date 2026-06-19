@@ -1,7 +1,7 @@
 
 import os
 import time
-from Test_Case.basetest import BaseTest
+from .basetest import BaseTest
 from PageObjects.LoginPage import LoginPage
 from Utilities.customLogger import LogGen
 import pytest

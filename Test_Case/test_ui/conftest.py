@@ -24,7 +24,7 @@ def setup(request):
         request.cls.driver = driver
         
     yield driver
-    print("\n🛑 --- [BROWSER CLOSE] Destroying Driver Context ---")
+    print("\n[BROWSER CLOSE] Destroying Driver Context ---")
     driver.quit()
 
 @pytest.fixture(scope="function", autouse=True)

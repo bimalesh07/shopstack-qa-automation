@@ -3,6 +3,7 @@ import requests
 from Utilities.customLogger import LogGen
 from API_Endpoints.AuthEndPoints import AuthEndpoints
 import time
+
 class Test_ShopStack_Auth_Negative_Endpoints:
     logger = LogGen.loggen()
 

@@ -4,7 +4,7 @@ import json
 from selenium.webdriver.common.by import By
 from Utilities.customLogger import LogGen
 from PageObjects.LoginPage import LoginPage
-from Test_Case.basetest import BaseTest
+from .basetest import BaseTest
 
 def load_ui_login_data():
     """test_data folders as complete login json load data """
@@ -29,6 +29,7 @@ class Test_Ui_Login_DDT(BaseTest):
             status = lp.is_logout_button_visible()
             assert status is True, "❌ Failed Login Flow: Logout button function returned False!"
             self.logger.info("🎉 SUCCESS: Valid login validated completely with avatar dropdown check!")
+            
         else:
             self.logger.info("Checking  neagative validation outcome")
             if test_case.get("is_html5_validation") is True:

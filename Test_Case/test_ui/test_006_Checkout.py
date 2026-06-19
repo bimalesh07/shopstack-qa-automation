@@ -1,6 +1,6 @@
 import time
 import os
-from Test_Case.basetest import BaseTest
+from .basetest import BaseTest
 from PageObjects.AddCartPage import AddCartPage
 from PageObjects.LoginPage import LoginPage
 from PageObjects.ProductCartPage import ProductCartPage 

@@ -1,7 +1,7 @@
 
 import time
 import os
-from Test_Case.basetest import BaseTest
+from .basetest import BaseTest
 from PageObjects.ProductCartPage import ProductCartPage
 from PageObjects.LoginPage import LoginPage
 from Utilities.customLogger import LogGen

@@ -1,8 +1,8 @@
-# 👉 File Location: Utilities/Db_helper.py
+
 from Utilities.customLogger import LogGen
 
 class DbHelper:
-    logger = LogGen.loggen()
+    logger = LogGen.dbloggen()
 
     @staticmethod
     def execute_select_query(connection, query):
