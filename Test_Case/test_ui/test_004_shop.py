@@ -40,7 +40,7 @@ class Test_004_Shop_Validation(BaseTest):
         reset_visible = sp.wait.until(
             lambda d: d.find_element(By.XPATH, sp.button_reset_filters_xpath).is_displayed()
         )
-        assert reset_visible == True, "❌ Saboot 1 Failed: Filter layout engine state mismatch!"
+        assert reset_visible == True, "❌ Proof 1 Failed: Filter layout engine state mismatch!"
         self.logger.info("🟢 PROOF 1 PASSED: Reactive price filters state updated cleanly on screen.")
 
         # Trigger dynamic sorting engine
@@ -52,7 +52,7 @@ class Test_004_Shop_Validation(BaseTest):
         toast_message_text = sp.click_wishlist_heart_and_capture_toast()
         
         assert "added" in toast_message_text.lower() or "wishlist" in toast_message_text.lower(), \
-            f"❌ Saboot 2 Failed: Toast text node validation mismatch! Captured: '{toast_message_text}'"
+            f"❌ Proof 2 Failed: Toast text node validation mismatch! Captured: '{toast_message_text}'"
         self.logger.info("🟢 PROOF 2 PASSED: Wishlist transaction verified via overlay notification toast.")
 
         # Step into single product view details layer
@@ -62,7 +62,7 @@ class Test_004_Shop_Validation(BaseTest):
         self.logger.info("🔬 Investigating Product Details Page redirection landmark element structure...")
         redirection_proof = sp.is_details_page_opened_successfully()
 
-        assert redirection_proof == True, "❌ Saboot 3 Failed: Target product details view layout expansion broke!"
+        assert redirection_proof == True, "❌ Proof 3 Failed: Target product details view layout expansion broke!"
         self.logger.info("🟢 PROOF 3 PASSED: Product details page redirection confirmed by landmark elements.")
 
         self.logger.info("🎉 SUCCESSFUL SUITE: Full independent Shop Module stack evaluated with 100% precision!")

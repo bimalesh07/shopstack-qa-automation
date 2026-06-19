@@ -11,7 +11,7 @@ from Utilities.customLogger import LogGen
 class Test__001_User_Registration_Suite(BaseTest):
     logger = LogGen.loggen()
     
-    # 🔐 Environment mappings
+    # Environment mappings
     c_name = os.getenv("CUSTOMER_NAME") or "Kamalesh Yadav"
     c_email = os.getenv("CUSTOMER_EMAIL") or "bimaleshk07@gmail.com"
     c_phone = os.getenv("CUSTOMER_PHONE") or "+917050863365"
@@ -32,7 +32,7 @@ class Test__001_User_Registration_Suite(BaseTest):
         rp.got_to_signup_page()
         rp.select_role("Customer")
         
-        # Sab khali bhej diya
+        # Send all empty fields
         rp.fill_Registration_from("customer", "", "", "", "")
         rp.click_create_account("customer")
         time.sleep(1)
@@ -53,7 +53,7 @@ class Test__001_User_Registration_Suite(BaseTest):
         rp.got_to_signup_page()
         rp.select_role("customer")
         
-        # Email address bina '@' symbol ke bheja "gfgfg"
+        # Sent email address without '@' symbol
         rp.fill_Registration_from("customer", "gfgfg", "gfg", "1234567890", "Secure@123")
         rp.click_create_account("customer")
         time.sleep(1)
@@ -73,7 +73,7 @@ class Test__001_User_Registration_Suite(BaseTest):
         rp.got_to_signup_page()
         rp.select_role("customer")
         
-        # Name aur Email toh bhara, lekin Password khali chhod diya
+        # Name and email filled, but password left empty
         rp.fill_Registration_from("customer", "gfgfg", "bimaleshk07@gmail.com", "1234567890", "")
         rp.click_create_account("customer")
         time.sleep(1)
@@ -93,7 +93,7 @@ class Test__001_User_Registration_Suite(BaseTest):
         rp.got_to_signup_page()
         rp.select_role("customer")
         
-        # Random fresh identifier taaki duplicate errors na aayen backend se
+        # Random fresh identifier to avoid duplicate backend errors
         # random_id = random.randint(1000, 9999)
         # dynamic_email = f"BimaleshYadav_{random_id}@gmail.com"
         

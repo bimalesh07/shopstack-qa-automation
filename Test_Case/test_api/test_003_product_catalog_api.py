@@ -1,4 +1,4 @@
-# 📁 Pata check karo: Test_Case/test_api/test_003_product_catalog_api.py
+# Path: Test_Case/test_api/test_003_product_catalog_api.py
 
 import pytest
 from Utilities.customLogger import LogGen
@@ -7,7 +7,7 @@ class Test_ShopStack_Products_CataLog_Endpoints:
     
     logger = LogGen.apiloggen()
     
-    #MASTER FIX 1: Variables ke nam ekdum standard set kiye
+    # Standardized variable names
     extracted_product_id = None
     extracted_product_slug = None
     extracted_category_slug = None
@@ -27,7 +27,7 @@ class Test_ShopStack_Products_CataLog_Endpoints:
 
         assert len(product_list) > 0, "Error: Store is Empty! No products found."
         
-        #ID aur Slug dono nikal liye taaki details page fail na ho
+        # Extract ID and Slug so that details page test does not fail
         Test_ShopStack_Products_CataLog_Endpoints.extracted_product_id = product_list[0].get("id")
         Test_ShopStack_Products_CataLog_Endpoints.extracted_product_slug = product_list[0].get("slug")
         
@@ -43,14 +43,14 @@ class Test_ShopStack_Products_CataLog_Endpoints:
         p_id = Test_ShopStack_Products_CataLog_Endpoints.extracted_product_id
         p_slug = Test_ShopStack_Products_CataLog_Endpoints.extracted_product_slug
         
-        # Pehle database ki raw ID se details feed check karenge
+        # First check details with database raw ID
         target = p_id if p_id is not None else p_slug
         assert target is not None, " Skipping: No live product identifier found."
         
         self.logger.info(f"🎯 Attempting Product Details with Identifier: {target}")
         response = product_client.get_product_by_id(target)
         
-        # 🔥 CRITICAL FIX: Agar backend ID par 404 de, toh turant automatic Slug se try karo!
+        # Fix: If backend returns 404 for ID, retry automatically using Slug
         if response.status_code == 404 and p_slug:
             self.logger.warning(f" ID [{p_id}] returned 404. Activating Fallback! Retrying with Slug: {p_slug}")
             response = product_client.get_product_by_id(p_slug)
@@ -67,7 +67,7 @@ class Test_ShopStack_Products_CataLog_Endpoints:
         """Public test: Verify the categories are valid or not"""
         self.logger.info("🎬 [PRODUCT TEST] --- Fetching Product Categories ---")
         
-        # Dynamic handling agar Client Class mein function name alag ho
+        # Dynamic handling if function name is different in Client class
         try:
             response = product_client.get_all_categories()
         except AttributeError:
@@ -93,7 +93,7 @@ class Test_ShopStack_Products_CataLog_Endpoints:
         c_id = Test_ShopStack_Products_CataLog_Endpoints.extracted_category_slug
         assert c_id is not None, "❌ Skipping: No category key available to filter."
 
-        # 🔥 MASTER FIX 2: Corrected 'parmas' to 'params' and pointing to 'get_all_products'
+        # Fix: Corrected 'parmas' to 'params' and point to 'get_all_products'
         my_params = {"category": c_id}
         response = product_client.get_all_products(params=my_params)
         

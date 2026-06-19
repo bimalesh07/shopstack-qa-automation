@@ -1,11 +1,11 @@
-# 👉 File Location: Test_Case/test_database/conftest.py
+# File Location: Test_Case/test_database/conftest.py
 import os
 import pytest
 import psycopg2
 from dotenv import load_dotenv
 from Utilities.customLogger import LogGen
 
-# Path setup: 3 folder peeche jaakar main project root se .env file ko load karega
+# Path setup: loads .env file from project root directory
 base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 env_path = os.path.join(base_dir, '.env')
 load_dotenv(dotenv_path=env_path)
@@ -13,13 +13,13 @@ load_dotenv(dotenv_path=env_path)
 logger = LogGen.loggen()
 
 # =====================================================================================
-# 🗄️ DATABASE FIXTURE (AUTOMATIC CLASS-LEVEL INJECTION)
+# DATABASE FIXTURE (AUTOMATIC CLASS-LEVEL INJECTION)
 # =====================================================================================
 @pytest.fixture(scope="class", autouse=True)
 def db_session(request):
     """
     Cloud Neon Postgres Database Connection Fixture.
-    Yeh parde ke peeche se automatic har test class ko 'self.db' thama dega.
+    This automatically injects connection as self.db in every test class.
     """
     connection = None
     logger.info("\n⏳ --- [DB CONNECT] Connecting to Cloud Neon Postgres Database... ---")
@@ -32,19 +32,19 @@ def db_session(request):
             user=os.environ.get("DB_USER"),
             password=os.environ.get("DB_PASSWORD"),
             port=os.environ.get("DB_PORT", "5432"),
-            sslmode='require'  # Neon Cloud ke liye mandatory hai
+            sslmode='require'  # Mandatory for Neon Cloud
         )
         logger.info("[DB SUCCESS] Connected successfully with Cloud Neon Database!")
         print("[DB SUCCESS] Connected successfully with Cloud Neon Database!")
         
-        # ASLI JADU: Connection object ko seedhe test class ke andar 'db' variable bana kar daal diya
+        # Set connection object as 'db' variable inside the test class
         if request.cls is not None:
             request.cls.db = connection
             
-        yield connection  # Yahan par aakar pause hoga aur test cases ko chalne dega
+        yield connection  # Yield connection and let test cases run
         
     except Exception as db_err:
-        # 🔴 FIX: logger.error kiya taaki crash na ho
+        # Fix: Log connection failure to avoid crash
         logger.error(f"\n❌ [DB CRITICAL ERROR] Neon cloud connection failed: {db_err}")
         raise db_err
         

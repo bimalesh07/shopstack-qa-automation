@@ -29,7 +29,7 @@ class Test_End_To_End_Checkout(BaseTest):
         ac = AddCartPage(self.driver)
         ac.add_to_cart(1)
         time.sleep(2)
-        # TOAST ASSERT BLOCK (Ise zaroori lagao bhai, isi se framework professional banta hai)
+        # Toast assertion block
         toast_success = ac.get_toast_message_text()
         assert toast_success is not None, "Test Failed: Success toast notification did not show"
         
@@ -81,7 +81,7 @@ class Test_End_To_End_Checkout(BaseTest):
         self.logger.info(f"Captured order_Status:'{order_status}'")
 
         assert "placed" in order_staus_lower or "confirmation" in order_staus_lower, \
-            f"❌ Test Failed: Automation galat routing node par land ho gaya: '{order_status}'"
+            f"❌ Test Failed: Automation landed on incorrect routing node: '{order_status}'"
         
         self.logger.info("*********** END SUITE: ORDER PLACEMENT TEST 100% PASSED ***********")
 

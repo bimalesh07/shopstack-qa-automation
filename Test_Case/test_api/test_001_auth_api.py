@@ -1,4 +1,4 @@
-# 📁 Pata: Test_Case/test_api/test_001_auth_api.py
+# Path: Test_Case/test_api/test_001_auth_api.py
 
 import pytest
 import time
@@ -63,7 +63,7 @@ class Test_ShopStack_Auth_Endpoints:
         
         is_activated = False
         
-        # CASE A: Agar pehla OTP dala hai, toh verify karo
+        # Case A: If first OTP is entered, verify it
         if user_input_1:
             self.logger.info(f"Attempting to verify account with the first OTP: {user_input_1}")
             otp_res = auth_client.verify_opt(self.test_user_email, user_input_1)
@@ -74,7 +74,7 @@ class Test_ShopStack_Auth_Endpoints:
             else:
                 self.logger.warning("First OTP failed or expired! Falling back to Resend OTP...")
         
-        # CASE B: Fallback Flow (Resend tabhi chalega jab zaroorat hogi)
+        # Case B: Fallback Flow (Resend runs only when needed)
         if not is_activated:
             self.logger.info("🚀 Triggering /resend-otp endpoint now...")
             
@@ -110,7 +110,7 @@ class Test_ShopStack_Auth_Endpoints:
         login_data = login_res.json()
         tokens_dict = login_data.get("tokens", {})
         
-        # 🕵️‍♂️ Check 1: Kya server ne pehle hi request mein directly tokens de diye?
+        # Check 1: Did the server return tokens directly in the first request?
         direct_access = tokens_dict.get("access") or login_data.get("access_token")
         direct_refresh = tokens_dict.get("refresh") or login_data.get("refresh_token")
         
@@ -119,7 +119,7 @@ class Test_ShopStack_Auth_Endpoints:
             Test_ShopStack_Auth_Endpoints.received_token = direct_access
             Test_ShopStack_Auth_Endpoints.received_refresh_token = direct_refresh
         else:
-            # 📨 Check 2: UI ki tarah agar server ne tokens nahi diye, matlab OTP bheja hai!
+            # Check 2: If the server did not return tokens, it means OTP was sent
             self.logger.info("Credentials matched but server requires a fresh LOGIN OTP (UI Behavior).")
             
             print(f"\n📨 [LOGIN API] Server is asking for verification! Login OTP sent to: {self.test_user_email}")
@@ -154,7 +154,7 @@ class Test_ShopStack_Auth_Endpoints:
         if not token or not refresh_token:
             pytest.skip("Skipping due to missing tokens.")
             
-        # Step A: Fetch Profile (Yeh 100% pass hota hai hamesha)
+        # Step A: Fetch Profile (This always passes)
         profile_res = auth_client.get_profile(token)
         assert profile_res.status_code == 200
         self.logger.info("Secure Profile fetched successfully! Login validated.")
@@ -162,12 +162,12 @@ class Test_ShopStack_Auth_Endpoints:
         # Step B: Logout
         logout_res = auth_client.logout(refresh_token)
         
-        # 🤝 JADU: Kyunki backend bina headers ke 401 de raha hai, humne use valid status_code list mein jod diya!
+        # Since backend returns 401 without headers, added 401 to valid status codes
         if logout_res.status_code in [200, 204, 201]:
             self.logger.info("Logout completed with success status!")
         elif logout_res.status_code == 401:
             self.logger.warning("⚠️ Logout returned 401 (Missing Headers or Expired on Server), bypassing to keep suite green.")
             
-        # Ab yeh assertion kabhi fail nahi hoga aur report hamesha green rahegi
+        # This assertion will not fail the test suite
         assert logout_res.status_code in [200, 204, 201, 401]
         self.logger.info("[TEST PASSED] Cleanup validation finished successfully!")

@@ -1,4 +1,4 @@
-# 👉 File: PageObjects/LoginPage.py
+# File: PageObjects/LoginPage.py
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,10 +17,10 @@ class LoginPage:
     # 🎯 3. Validations & Dynamic Popups
     text_login_error_xpath = "//div[contains(@class,'text-rose-600') or contains(text(),'invalid') or contains(text(),'password')]"
     
-    # 🔥 FIX: Variable ka naam sahi kiya (Screenshot ke mutabik 'BK' avatar button)
+    # Fix: Corrected variable name ('BK' avatar button based on screenshot)
     button_user_avatar_xpath = "//button[contains(., 'BK') or contains(@class, 'rounded-full')]"
     
-    # 🔥 FIX: Toota hua Logout XPath ekdum sateek kiya
+    # Fix: Corrected broken Logout XPath
     button_logout_xpath = "//button[contains(text(),'Logout') or contains(.,'LOGOUT')] | //span[contains(text(),'Logout')]"
 
     def __init__(self, driver):
@@ -61,26 +61,26 @@ class LoginPage:
         try:
             local_wait = WebDriverWait(self.driver, 12)
             
-            # Avatar locate karega
+            # Locate avatar
             avatar_btn = local_wait.until(
                 EC.element_to_be_clickable((By.XPATH, self.button_user_avatar_xpath))
             )
             self.logger.info("🎯 Profile Avatar found! Clicking it to open dynamic dropdown menu...")
             self.driver.execute_script("arguments[0].click();", avatar_btn)
             
-            time.sleep(1.5) # Dropdown slide hone ka halwa transition wait
+            time.sleep(1.5) # Wait for dropdown slide transition
             
-            # Dynamic Logout check karega
+            # Check dynamic Logout
             logout_btn = local_wait.until(
                 EC.visibility_of_element_located((By.XPATH, self.button_logout_xpath))
             )
             
             if logout_btn.is_displayed():
                 self.logger.info("🎯 Success: LOGOUT button component is strictly visible inside dropdown menu.")
-                # 🔄 🔥 CHATUR TRICK: Dropdown ko wapas BAND karo taaki SHOP link par click block na ho!
+                # Close the dropdown menu to avoid blocking the SHOP link click
                 self.logger.info("🔄 Closing the profile dropdown menu to clear the UI overlay...")
                 self.driver.execute_script("arguments[0].click();", avatar_btn)
-                time.sleep(1) # Chota sa stabilization wait menu gayab hone ke liye
+                time.sleep(1) # Small stabilization wait for menu to close
                 
                 return True
             

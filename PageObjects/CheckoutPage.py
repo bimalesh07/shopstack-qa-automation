@@ -11,7 +11,7 @@ class CheckoutPage:
         self.wait = WebDriverWait(driver, 10)
         self.logger = LogGen.loggen()
     
-    # --- Locators Grid (Saare standard Tuples mein convert kar diye hain) ---
+    # --- Locators Grid (All converted to standard tuples) ---
     cart_nav_path = (By.XPATH, "//*[name()='path' and contains(@d,'M2.05 2.05')]")
     btn_checkout_securely = (By.XPATH, "//span[normalize-space()='Checkout Securely']")
     lbl_preparing_checkout = (By.XPATH, "//p[@class='text-slate-600 font-medium']")
@@ -20,7 +20,7 @@ class CheckoutPage:
     # Address Form fields
     txt_full_name = (By.XPATH, "//input[@placeholder='John Doe']")
     txt_phone = (By.XPATH, "//input[@placeholder='+91 00000 00000']")
-    txt_street = (By.XPATH, "//input[@placeholder='+91 00000 00000']")  # 💡 UI placeholder text check kar lena ek baar
+    txt_street = (By.XPATH, "//input[@placeholder='+91 00000 00000']")  # Verify UI placeholder text
     txt_city = (By.XPATH, "//input[@placeholder='City']")
     txt_state = (By.XPATH, "//input[@placeholder='State']")
     txt_pincode = (By.XPATH, "//input[@placeholder='Pincode']")
@@ -40,7 +40,7 @@ class CheckoutPage:
     #Actions / Methods ---
 
     def click_cart_nav_path(self):
-        # *self use karne se tuple open ho jata hai (By.XPATH, "path") ki tarah
+        # *self unpacks the tuple like (By.XPATH, "path")
         nav_cart = self.wait.until(EC.element_to_be_clickable(self.cart_nav_path))
         self.driver.execute_script("arguments[0].click();", nav_cart)
         self.logger.info("************ Cart Navbar Icon Clicked Successfully ************")
@@ -54,7 +54,7 @@ class CheckoutPage:
     def wait_for_check_out_laoder_disapaer(self):
         self.logger.info("******** Checking until Preparing checkout is invisible **********************")
         try:
-            #Bug Fixed: invisibility_of_element_located use hota hai tuple ke liye
+            # Bug Fixed: use invisibility_of_element_located for tuple
             self.wait.until(EC.invisibility_of_element_located(self.lbl_preparing_checkout))
         except Exception as e:
             self.logger.error(f"Something went wrong with loader wait: {e}")
@@ -69,7 +69,7 @@ class CheckoutPage:
         except:
             self.logger.info("Shipping Grid is empty! FILLING The address block...")
             
-            #Form display karne ke liye + Add New par click kiya
+            # Click + Add New to display the form
             add_new_btn = self.wait.until(EC.element_to_be_clickable(self.btn_add_new_address))
             self.driver.execute_script("arguments[0].click();", add_new_btn)
             time.sleep(1)
@@ -95,7 +95,7 @@ class CheckoutPage:
             state_field.clear()
             state_field.send_keys(input_state)
             
-            #Bug Fixed: Yahan full_name ka locator laga tha pehle, ab sahi txt_pincode chalega
+            # Bug Fixed: Corrected locator to txt_pincode
             pin_field = self.wait.until(EC.visibility_of_element_located(self.txt_pincode))
             pin_field.clear()
             pin_field.send_keys(input_pin)
@@ -106,7 +106,7 @@ class CheckoutPage:
             time.sleep(3)
 
     def selected_payment_and_place_order(self, method="COD"):
-        #1. PAYMENT METHOD SELECT KARNA ---
+        # 1. Select Payment Method ---
         if method.upper() == "COD":
             self.logger.info("************ Selecting Cash on Delivery *****************")
             mode_btn = self.wait.until(EC.element_to_be_clickable(self.opt_cash_on_delivery))
@@ -119,7 +119,7 @@ class CheckoutPage:
             self.driver.execute_script("arguments[0].click();", mode_btn)
             time.sleep(2)
             
-            #ONLINE ME PEHLE BUTTON CLICK HOGA TAAKI RAZORPAY POPUP KHULE!
+            # In online mode, click button first to open Razorpay popup
             order_btn = self.wait.until(EC.element_to_be_clickable(self.btn_complete_order))
             self.driver.execute_script("arguments[0].click();", order_btn)
             
@@ -127,7 +127,7 @@ class CheckoutPage:
             self.logger.info("***** Wait for Razorpay manual payment (1 Min) **************")
             time.sleep(60)
             self.logger.info("COMPLETED THE PAYMENT BUFFER CYCLE")
-            return # Online ka execution yahin se block return ho jayega
+            return # Return early for online mode execution
 
         # --- 2. COD KE LIYE FINAL BUTTON CLICK (ROUTING OUTSIDE BLOCK) ---
         order_btn = self.wait.until(EC.element_to_be_clickable(self.btn_complete_order))

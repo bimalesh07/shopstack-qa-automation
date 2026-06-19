@@ -9,7 +9,7 @@ import pytest
 class Test_002_Direct_Login(BaseTest):
     logger = LogGen.loggen()
     
-    # Robust Fallback Matrix: Agar environment None de, toh static string utha lo
+    # Robust Fallback Matrix: If environment is None, use static string
     user_email = os.getenv("LOGIN_USERNAME") if os.getenv("LOGIN_USERNAME") else "bimaleshy49@gmail.com"
     user_password = os.getenv("LOGIN_PASSWORD") if os.getenv("LOGIN_PASSWORD") else "Password@123"
 
@@ -27,7 +27,7 @@ class Test_002_Direct_Login(BaseTest):
 
         assert "invalid" in error_box_text or "credentials" in error_box_text or "wrong" in error_box_text, f"not match box text"
 
-        # Parde ke peeche logic: False == False -> Success!
+        # Verify logout button is not visible
         assert lp.is_logout_button_visible() == False
         self.logger.info("🎉 PASSED: SYSTEM SUCCESSFULLY blocked the unauthorized access.")
     
@@ -41,8 +41,8 @@ class Test_002_Direct_Login(BaseTest):
         self.logger.info(f"Attempting authorization for user: {self.user_email}")
         lp.login_direct(self.user_email, self.user_password)
 
-        self.logger.info("⏳ MANUAL ACTION: Enter a OTP right now and click verify button...")
-        time.sleep(25) # Shanti se 25 second ke andar enter dabao bhai
+        self.logger.info("MANUAL ACTION: Enter OTP and click verify button...")
+        time.sleep(25) # Wait 25 seconds to enter OTP manually
         
         time.sleep(2) # Landing stabilization
         

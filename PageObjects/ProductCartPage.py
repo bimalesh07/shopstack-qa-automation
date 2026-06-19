@@ -85,14 +85,14 @@ class ProductCartPage:
         except:
             self.logger.warning("Reactive loader didn't appear or cleared out instantly.")
 
-        # 🚗 Strict post-loader breathing space taaki layout completely freeze ho jaye
+        # Post-loader wait to allow layout to load completely
         self.logger.info("⏳ Giving 3 seconds breathing buffer for DOM initialization post-refresh...")
         time.sleep(3)
 
         #INPUT MAX PRICE (With Stale-Element Exception Proof Loop )
         self.logger.info("🔍 Entering Stale-Proof Input Loop for Max Price Field...")
         
-        for attempt in range(1, 4): # 3 baar fresh re-try maarega agar stale aaya toh
+        for attempt in range(1, 4): # Retry 3 times if stale element exception occurs
             try:
                 self.logger.info(f" Max Field Entry Attempt {attempt}/3...")
                 
@@ -107,13 +107,13 @@ class ProductCartPage:
                 # Type the price
                 max_field.send_keys(max_price)
                 self.logger.info(f"📥 Success: Max Price strictly set to: {max_price}")
-                break # Agar type successfully chal gaya, toh loop se baahar nikal jaao!
+                break # Exit loop if input is successful
                 
             except Exception as e:
                 self.logger.warning(f" Attempt {attempt} intercepted by Stale reference or UI block. Retrying in 1.5s...")
                 time.sleep(1.5)
         else:
-            # Agar 3 attempts ke baad bhi fail hua (jo ki nahi hoga), toh error raise karega
+            # If it fails after 3 attempts, raise exception
             raise StaleElementReferenceException("Critical Block: Max Price element is continuously unstable.")
         
         time.sleep(4) # Wait for complete filtered dataset array refresh
@@ -152,20 +152,20 @@ class ProductCartPage:
         self.logger.info("Clicking Wishlist Heart button...")
         heart_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_wishlist_heart_xpath)))
         
-        # 🟢 FIX: Normal click ki jagah standard Python click try karte hain pehle
-        # Agar UI overlay ka issue na ho toh ye sabse safe hai.
+        # Fix: Try standard click first
+        # This is safe if there is no UI overlay issue.
         try:
             heart_btn.click()
         except:
-            # Fallback: Agar normal click block hua, toh JavaScript forced single click chalega
+            # Fallback: If normal click is blocked, run Javascript click
             self.driver.execute_script("arguments[0].click();", heart_btn)
         """
-        if same path of miltipale so we make likes this then esay to target to 
-        # 🟢 find_elements (s lagakar) saare buttons ki list bana dega
+        If multiple paths exist, target the first element
+        # find_elements returns a list of all matching buttons
         heart_buttons = self.driver.find_elements(By.XPATH, "//button[contains(@class, 'hover:text-red-500')]")
         
         if len(heart_buttons) > 0:
-            # [0] lagakar strictly pehla button JavaScript ko diya, isse JavascriptException kabhi nahi aayega
+            # Use index [0] to get the first button and click via JavaScript to avoid JavascriptException
             self.driver.execute_script("arguments[0].click();", heart_buttons[0])
         else:
             self.logger.error("No heart buttons found!")

@@ -1,4 +1,4 @@
-# 👉 File: Test_Case/basetest.py
+# File: Test_Case/test_ui/basetest.py
 import pytest
 
 @pytest.mark.usefixtures("setup")

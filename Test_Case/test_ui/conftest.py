@@ -1,4 +1,4 @@
-# 👉 File Location: Test_Case/test_ui/conftest.py (Sirf UI Folder Ke Andar)
+# File Location: Test_Case/test_ui/conftest.py
 import os
 import pytest
 import pytest_html
@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # =====================================================================================
-# 🌐 BROWSER SETUP FIXTURES (Exclusive for UI)
+# BROWSER SETUP FIXTURES
 # =====================================================================================
 @pytest.fixture(scope="class")
 def setup(request):
@@ -36,11 +36,11 @@ def fresh_url(request):
 
 
 # =====================================================================================
-# 📸 LOCAL HOOK: AUTOMATIC SCREENSHOT ON FAILURE (Sirf UI Fails ke liye)
+# LOCAL HOOK: AUTOMATIC SCREENSHOT ON FAILURE
 # =====================================================================================
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Agar UI test fail hoga, toh yeh hook automatic screenshot lekar report mein jod dega"""
+    """Hook to capture screenshot on UI failure and attach to report"""
     outcome = yield
     report = outcome.get_result()
     extra = getattr(report, "extra", [])
@@ -48,7 +48,7 @@ def pytest_runtest_makereport(item, call):
     if report.when == "call" or report.when == "setup":
         xfail = hasattr(report, "wasxfail")
         
-        # Check agar test fail hua hai
+        # Check if test failed
         if (report.failed and not xfail) or (report.skipped and xfail):
             file_name = report.nodeid.replace("::", "_").replace(".", "_").replace("/", "_") + ".png"
             screenshot_dir = ".\\Screenshots"
@@ -58,14 +58,14 @@ def pytest_runtest_makereport(item, call):
                 
             file_path = os.path.join(screenshot_dir, file_name)
             
-            # Fixture se ya class context se driver nikalna
+            # Extract driver from fixture or class context
             driver = item.funcargs.get('setup') or (item.cls.driver if hasattr(item, 'cls') and hasattr(item.cls, 'driver') else None)
             
             if driver:
                 driver.save_screenshot(file_path)
                 print(f"\n📸 [SCREENSHOT CAPTURED] UI Failure Saved to: {file_path}")
                 
-                # HTML Report me image embed karne ka code
+                # Embed image in HTML report
                 if os.path.exists(file_path):
                     html = f'<div><img src="..\\Screenshots\\{file_name}" alt="screenshot" style="width:304px;height:228px;" ' \
                            f'onclick="window.open(self.src)" align="right"/></div>'

@@ -4,7 +4,7 @@ import os
 
 class LogGen:
 
-    # 🖥️ 1. THIS IS FOR UI TESTING (Normal/Default Logs)
+    # 1. THIS IS FOR UI TESTING (Normal/Default Logs)
     @staticmethod
     def loggen():
         if not os.path.exists(".\\Logs"):
@@ -20,9 +20,9 @@ class LogGen:
         logger.addHandler(file_handler)
         return logger
 
-    # 🌐 2. THIS IS FOR API TESTING (Perfect Name)
+    # 2. THIS IS FOR API TESTING
     @staticmethod
-    def apiloggen():  # 👈 Iska naam ab sahi se 'apiloggen' hai
+    def apiloggen():  # API log generator
         if not os.path.exists(".\\Logs"):
             os.makedirs(".\\Logs")
             
@@ -37,9 +37,9 @@ class LogGen:
         api_logger.addHandler(api_file_handler)
         return api_logger
     
-    # 🗄️ 3.HIS IS FOR DATABASE TESTING (Perfect Name)
+    # 3. THIS IS FOR DATABASE TESTING
     @staticmethod
-    def dbloggen():  # 👈 Iska naam ab sahi se 'dbloggen' hai
+    def dbloggen():  # DB log generator
         if not os.path.exists(".\\Logs"):
             os.makedirs(".\\Logs")
             

@@ -1,4 +1,4 @@
-# 👉 File Location: Test_Case/test_api/test_api_ddt.py
+# File Location: Test_Case/test_api/test_api_ddt.py
 import pytest
 import json
 from Utilities.customLogger import LogGen

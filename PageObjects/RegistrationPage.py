@@ -27,7 +27,7 @@ class RegistrationPage:
     button_create_customer_xpath = "//span[normalize-space()='Create Customer Account']"
     button_create_vendor_xpath = "//span[normalize-space()='Create Vendor Account']"
     
-    # Custom backend message box (Jaise: Email already exists ya Server error panel)
+    # Custom backend message box (e.g. Email already exists or Server error panel)
     text_custom_error_box_xpath = "//div[contains(@class,'text-rose-600')] | //div[contains(@class,'bg-rose-50')]"
     
     # SUCCESS VALIDATION XPATHS: Jo tumne bataye!
@@ -78,9 +78,9 @@ class RegistrationPage:
             self.logger.info("Clicking Create Vendor Account Button")
             self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_create_vendor_xpath))).click()
     
-    #POWERFUL ERROR HANDLER: Yeh HTML5 Tooltip aur Custom Box dono ka text nikalega
+    # Error handler: Gets text from both HTML5 tooltip and custom box
     def get_any_validation_error_text(self, field_type="name"):
-        # 1. Pehle check karo agar koi browser native HTML5 tooltip pop hua hai (Pic 1, 2, 3)
+        # 1. Check if browser native HTML5 tooltip popped up (Pic 1, 2, 3)
         try:
             if field_type == "name":
                 element = self.driver.find_element(By.XPATH, self.textbox_fullname_xpath)
@@ -96,7 +96,7 @@ class RegistrationPage:
         except:
             pass
 
-        # 2. Agar HTML5 nahi mila, toh check karo agar custom red error div box pop hua hai
+        # 2. If HTML5 not found, check if custom red error box popped up
         try:
             custom_error = self.driver.find_element(By.XPATH, self.text_custom_error_box_xpath).text
             if custom_error:
@@ -107,12 +107,12 @@ class RegistrationPage:
             
         return ""
     
-    # DYNAMIC SUCCESS CHECKER: Jo tumne bataye un elements ko scan karega
+    # Dynamic success checker: scan for success elements
     def is_registration_successful(self, role_type):
     #   """  try:
     #         if role_type.lower() == "customer":
     #             self.logger.info("🔍 Scanning for Customer Violet Profile Icon safely...")
-    #             # FIX: Explicit visibility_of_element_located lagaya taaki DOM load hone ke baad rendering delay handle ho sake
+    #             # Fix: added explicit wait for visibility of element to handle rendering delay
     #             element = self.wait.until(EC.visibility_of_element_located((By.XPATH, self.success_customer_indicator_xpath)))
     #             if element:
     #                 self.logger.info("Profile Button render check complete.")
@@ -128,12 +128,12 @@ class RegistrationPage:
     #         return False"""
           #ULTRA HACK: Bina kisi locator ke direct page content verification matrix
 
-        time.sleep(3) # Safe buffer taaki dashboard text load ho jaye
+        time.sleep(3) # Buffer wait for dashboard text to load
         try:
             page_text = self.driver.page_source.lower()
             if role_type.lower() == "customer":
                 self.logger.info("🔍 Scanning page source content for Customer markers...")
-                # TOAST MATCH ADDED: Agar screen par 'verified' ya 'successfully' ya 'logout' kuch bhi dikha
+                # Toast Match: If screen shows verified, successfully or logout
                 if "verified" in page_text or "successfully" in page_text or "logout" in page_text:
                     self.logger.info("Customer landing confirmed via validation message matrix.")
                     return True

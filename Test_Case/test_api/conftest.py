@@ -1,4 +1,4 @@
-# 📁 Test_Case/test_api/conftest.py
+# Test_Case/test_api/conftest.py
 
 import pytest
 import time
@@ -11,20 +11,20 @@ from Utilities.customLogger import LogGen
 # Connecting to your dedicated fresh API logger file (automation_api.log)
 logger = LogGen.apiloggen()
 
-#Global variables taaki pure run mein ek hi permanent user use ho aur data mix na ho
+# Global variables so that the same user is used in the entire run and data is not mixed
 FIXED_TEST_EMAIL = f"shopstack_live_{int(time.time())}@test.com"
 FIXED_PASSWORD = "SecurePassword123"
 IS_REGISTERED = False  # Flag to check if user creation is already done
 
 
 # =========================================================================
-# FIXTURE 1: Master Remote Control (Saare pages ke buttons isme hain)
+# FIXTURE 1: Master Remote Control
 # =========================================================================
 @pytest.fixture(scope="class")
 def auth_client():
     """
-    🎛️ Setting up the core API client remote control.
-    Is ek remote se aap Signup, login, verify_opt, get_profile sab chala sakte hain.
+    🎛️ Setting up the core API client.
+    Using this client, you can run Signup, login, verify_otp, and get_profile.
     """
     logger.info("--- [SETUP] Initializing the Master API Client ---")
     base_url = ReadEnv.get_api_base_url()
@@ -39,7 +39,7 @@ def product_client():
 
 
 # =========================================================================
-# FIXTURE 2: Smart Token Engine (Add to Cart/Profile ko Token dene ke liye)
+# FIXTURE 2: Token engine to provide token for Cart/Profile
 # =========================================================================
 @pytest.fixture(scope="class")
 def user_token(auth_client):
@@ -53,8 +53,7 @@ def user_token(auth_client):
     
     logger.info("--- [AUTOPILOT] Token verification engine requested ---")
     
-    # -------------------------------------------------------------------------
-    # ROUTE A: User pehli baar aaya hai -> DIRECT REGISTER (Register par hi login token milega)
+    # ROUTE A: New user -> Direct register (login token is in registration response)
     # -------------------------------------------------------------------------
     if not IS_REGISTERED:
         logger.info(f"Creating a fresh permanent user for this test run: {FIXED_TEST_EMAIL}")
@@ -71,9 +70,9 @@ def user_token(auth_client):
         reg_response = auth_client.Signup(signup_payload, role='customers')
         
         if reg_response.status_code == 201 or reg_response.status_code == 200:
-            IS_REGISTERED = True  # Flag ko true kiya taaki dobara register na ho
+            IS_REGISTERED = True  # Set flag to True so registration is not repeated
             
-            # Flow ke mutabik register hote hi seedha login token response mein mil gaya!
+            # Register response contains the login token directly
             access_token = reg_response.json().get("access_token")
             logger.info("🟢 User successfully created! Extracted direct login token from registration response.")
             return access_token
@@ -81,8 +80,7 @@ def user_token(auth_client):
             logger.error(f"Failed to create the background user: {reg_response.text}")
             raise Exception("❌ Background Initial Registration Failed!")
 
-    # -------------------------------------------------------------------------
-    # ROUTE B: User already registered hai (Ya logout ho chuka hai) -> LOGIN + REAL OTP FLOW
+    # ROUTE B: User already registered or logged out -> Login + OTP Flow
     # -------------------------------------------------------------------------
     else:
         logger.info(f"User already exists in DB. Skipping registration, hitting Login for: {FIXED_TEST_EMAIL}")

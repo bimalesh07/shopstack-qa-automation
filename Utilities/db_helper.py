@@ -6,10 +6,10 @@ class DbHelper:
 
     @staticmethod
     def execute_select_query(connection, query):
-        """🔎 SELECT Query chalakar data list laane ke liye"""
+        """Execute SELECT query to fetch data"""
         cursor = None
         try:
-            # Bane-banaye connection se cursor banaya
+            # Create cursor from the connection
             cursor = connection.cursor()
             DbHelper.logger.info(f"💾 Executing DB Query: {query}")
             
@@ -25,19 +25,19 @@ class DbHelper:
 
     @staticmethod
     def execute_update_or_delete_query(connection, query):
-        """🛠️ INSERT, UPDATE, ya DELETE query chalane ke liye"""
+        """Execute INSERT, UPDATE, or DELETE query"""
         cursor = None
         try:
             cursor = connection.cursor()
             DbHelper.logger.info(f"💾 Executing DB Write Query: {query}")
             
             cursor.execute(query)
-            connection.commit()  # Changes pakke karne ke liye
+            connection.commit()  # Commit transaction
             return True
         
         except Exception as e:
             DbHelper.logger.error(f"❌ SQL Write Error: {e}")
-            connection.rollback()  # Galti hone par purana roll back karne ke liye
+            connection.rollback()  # Rollback on error
             return False
         finally:
             if cursor:

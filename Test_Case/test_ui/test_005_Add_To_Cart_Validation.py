@@ -7,7 +7,7 @@ from PageObjects.ProductCartPage import ProductCartPage
 from Utilities.customLogger import LogGen
 
 class Test_Add_To_Cart(BaseTest):
-    # Environment variables ya default values se credentials uthana
+    # Get credentials from environment variables or default values
     user_email = os.getenv("LOGIN_USERNAME") if os.getenv("LOGIN_USERNAME") else "bimaleshy49@gmail.com"
     user_password = os.getenv("LOGIN_PASSWORD") if os.getenv("LOGIN_PASSWORD") else "Password@123"
     logger = LogGen.loggen()
@@ -20,11 +20,11 @@ class Test_Add_To_Cart(BaseTest):
         lp.click_navbar_login()
         lp.login_direct(self.user_email, self.user_password)
         
-        # OTP enter karne ke liye 15 seconds ka manual wait
+        # Manual wait for OTP entry
         self.logger.info("⏳ OTP WAITING BUFFER: Enter OTP manually right now...")
         time.sleep(15)
         
-        # Check karna ki login successful hua ya nahi
+        # Check if login was successful
         assert lp.is_logout_button_visible() == True, "ERROR: LOGIN Are Not Working"
         self.logger.info("Login is successfully")
 
@@ -33,7 +33,7 @@ class Test_Add_To_Cart(BaseTest):
         pc.navigate_to_shop_page()
         pc.click_product_to_open_details()
 
-        # Check karna ki product details page sahi se khula ya nahi
+        # Check if product details page opened successfully
         assert pc.is_details_page_opened_successfully() == True, "Step Error: Target details view did not open"
         self.logger.info("Loading confirmed, handing over control to AddCartPage")
 
@@ -42,19 +42,19 @@ class Test_Add_To_Cart(BaseTest):
         self.logger.info("Test Step A: Selecting 5 units and clicking add to collection")
         ap.add_to_cart(4) # 4 clicks + 1 default = 5 items
 
-        # Toast message extract karna
+        # Extract toast message
         toast_success = ap.get_toast_message_text()
         assert toast_success is not None, "Test Failed: Success toast notification did not show"
         
         toast_lower = toast_success.lower()
         
-        # SMART CHECK FOR STEP A: Cart fresh ho ya pehle se full, dono me test pass hoga
+        # Check for Step A: test passes whether cart is empty or already has items
         if "added" in toast_lower or "to cart" in toast_lower or "success" in toast_lower:
             self.logger.info(f"🟢 STEP A PASSED (Fresh Cart State): Items added successfully -> {toast_success}")
             
         elif "sorry" in toast_lower or "stock" in toast_lower or "only" in toast_lower or "available" in toast_lower:
             self.logger.warning(f"⚠️ STEP A PASSED (Stale Cart State): Cart already full from previous run -> {toast_success}")
-            assert True # Purane kachre ki wajah se test crash nahi hoga
+            assert True # Do not fail the test due to existing cart state
         else:
             assert False, f"Test Failed: Unexpected toast string captured in Step A: {toast_success}"
 
@@ -62,7 +62,7 @@ class Test_Add_To_Cart(BaseTest):
         self.logger.info("Refreshing browser to sync backend cart state")
         self.driver.refresh()
         
-        # 8 seconds ruchenge taaki backend se user ka purana cart session load ho jaye
+        # Wait 8 seconds to let backend sync the old cart session
         self.logger.info("⏳ Waiting 8 seconds for backend session to sync completely...")
         time.sleep(8)
         
@@ -73,14 +73,14 @@ class Test_Add_To_Cart(BaseTest):
         # Toast message standard render hone ka wait
         time.sleep(3)
 
-        # Step B ka toast message check karna
+        # Check toast message for Step B
         toast_error = ap.get_toast_message_text()
         assert toast_error is not None, "Test Failed: Error toast notification did not show for stock overflow"
         self.logger.info(f"Captured Toast in Step B: {toast_error}")
 
         toast_err_lower = toast_error.lower()
         
-        # SMART CHECK FOR STEP B: Enforce check handle karna
+        # Check for Step B: Handle cart limit enforcement check
         if "sorry" in toast_err_lower or "stock" in toast_err_lower or "only" in toast_err_lower or "available" in toast_err_lower:
             self.logger.info(f"🟢 STEP B PASSED: Stock boundary limit successfully enforced by system -> {toast_error}")
         elif "added" in toast_err_lower or "success" in toast_err_lower:

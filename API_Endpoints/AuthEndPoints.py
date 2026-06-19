@@ -11,7 +11,7 @@ class AuthEndpoints:
     def Signup(self, user_data, role = 'customers'):
         """Signup: Customers and Vendor both so we Dynamic endpoints handles"""
         if role.lower() == 'vendor':
-            url = f"{self.base_url}/vendor/register/"  # 🔧 Added trailing slash
+            url = f"{self.base_url}/vendor/register/"  # Added trailing slash
         else:
             url = f"{self.base_url}/register/"
             
@@ -27,7 +27,7 @@ class AuthEndpoints:
     
     def verify_opt(self, email, otp):
         """Verify otp Registration Login after verify the otp"""
-        url = f"{self.base_url}/verify-otp/"  # 🔧 Added trailing slash '/'
+        url = f"{self.base_url}/verify-otp/"  # Added trailing slash '/'
         payload = {"email": email, "otp": otp}
         
         self.logger.info(f"--- Verifying OTP for {email} ---")
@@ -41,7 +41,7 @@ class AuthEndpoints:
     
     def resend_otp(self, email):
         """RESEND OTP: If Otp not come then we target resend otp"""
-        url = f"{self.base_url}/resend-otp/"  # 🔧 Added trailing slash '/'
+        url = f"{self.base_url}/resend-otp/"  # Added trailing slash '/'
         payload = {"email": email}
         
         self.logger.info(f"--- Requesting a new OTP link/code ---")
@@ -55,7 +55,7 @@ class AuthEndpoints:
     
     def login(self, email, password):
         """LOGIN: Credentials we send to login"""
-        url = f"{self.base_url}/login/"  # 🔧 Added trailing slash '/'
+        url = f"{self.base_url}/login/"  # Added trailing slash '/'
         payload = {"email": email, "password": password}
         
         self.logger.info(f"--- Attempting secure login ---")
@@ -85,7 +85,7 @@ class AuthEndpoints:
         url = f"{self.base_url}/logout/"
         payload = {"refresh": refresh_token}
         
-        # 🔑 JADU: Agar access_token pass kiya hai, toh headers banao
+        # If access token is passed, create headers
         headers = {}
         if access_token:
             headers["Authorization"] = f"Bearer {access_token}"
@@ -93,7 +93,7 @@ class AuthEndpoints:
         self.logger.info(f"--- Terminating user session (Logout) ---")
         self.logger.info(f"Sending logout request to clean session at: {url}")
         
-        # 🎯 Ab requests mein headers bhi bhej rahe hain!
+        # Include headers in the request
         response = requests.post(url, json=payload, headers=headers)
         
         self.logger.info(f"Logout finished with status: {response.status_code}")
