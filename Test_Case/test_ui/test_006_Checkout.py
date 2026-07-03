@@ -1,5 +1,6 @@
 import time
 import os
+import pytest
 from .basetest import BaseTest
 from PageObjects.AddCartPage import AddCartPage
 from PageObjects.LoginPage import LoginPage
@@ -8,20 +9,26 @@ from Utilities.customLogger import LogGen
 from PageObjects.CheckoutPage import CheckoutPage
 
 class Test_End_To_End_Checkout(BaseTest):
-    user_email = os.getenv("LOGIN_USERNAME") if os.getenv("LOGIN_USERNAME") else "bimaleshy49@gmail.com"
-    user_password = os.getenv("LOGIN_PASSWORD") if os.getenv("LOGIN_PASSWORD") else "Password@123"
+    user_email = os.getenv("LOGIN_USERNAME") or "bimaleshy49@gmail.com"
+    user_password = os.getenv("LOGIN_PASSWORD") or "Password@123"
     logger = LogGen.loggen()
 
-    def test_checkout_and_place_order_flow(self):
-        self.logger.info("**************Starting Checkout and Order Placement Test")
+    def test_01_user_authentication(self, fresh_url):
+        """Step 1: Execute valid user authentication sequence and pass OTP check."""
+        self.logger.info("Executing Step 1: User Authentication Sequence")
         lp = LoginPage(self.driver)
         lp.click_navbar_login()
         lp.login_direct(self.user_email, self.user_password)
-        self.logger.info("Wating For OTP Manualy")
+        
+        self.logger.info("Pausing execution for manual OTP entry on the browser screen...")
         time.sleep(20)
-        assert lp.is_logout_button_visible() == True, "ERROR: Not Login Successfully "
+        
+        assert lp.is_logout_button_visible() is True, "Validation check failed: Active login session tracking missing."
+        self.logger.info("User login successfully verified.")
 
-        """Add to product to cart """
+    def test_02_add_product_to_cart(self):
+        """Step 2: Navigate to shop module, open details, and add the target item to cart."""
+        self.logger.info("Executing Step 2: Catalog Navigation and Cart Inclusion")
         pc = ProductCartPage(self.driver)
         pc.navigate_to_shop_page()
         pc.click_product_to_open_details()
@@ -29,33 +36,31 @@ class Test_End_To_End_Checkout(BaseTest):
         ac = AddCartPage(self.driver)
         ac.add_to_cart(1)
         time.sleep(2)
-        # Toast assertion block
+        
         toast_success = ac.get_toast_message_text()
-        assert toast_success is not None, "Test Failed: Success toast notification did not show"
+        assert toast_success is not None, "Validation check failed: Success toast notification did not display."
         
         toast_lower = toast_success.lower()
-        
         if "added" in toast_lower or "to cart" in toast_lower or "success" in toast_lower:
-            self.logger.info(f"STEP A PASSED (Fresh Cart State): Items added successfully -> {toast_success}")
-            
+            self.logger.info(f"Step A passed (Fresh Cart State): Items added successfully -> {toast_success}")
         elif "sorry" in toast_lower or "stock" in toast_lower or "only" in toast_lower or "available" in toast_lower:
-            self.logger.warning(f"STEP A PASSED (Stale Cart State): Cart already full from previous run -> {toast_success}")
+            self.logger.warning(f"Step A warning (Stale Cart State): Cart already populated from a previous run -> {toast_success}")
             assert True 
         else:
-            assert False, f"Test Failed: Unexpected toast string captured in Step A: {toast_success}"
+            assert False, f"Validation check failed: Unexpected toast string captured in Step A: {toast_success}"
 
-        """Redirection cart page """
+    def test_03_shipping_address_configuration(self):
+        """Step 3: Redirect to shopping cart context and manage shipping layout coordinates."""
+        self.logger.info("Executing Step 3: Shopping Cart Redirection and Shipping Setup")
         chk = CheckoutPage(self.driver)
-        self.logger.info("Clicking the Secure Checkout")
+        
         self.driver.get("https://shop-stack-ecommerce.vercel.app/cart")
         time.sleep(2)
+        
         chk.click_checkout_securely()
         chk.wait_for_check_out_laoder_disapaer()
 
-
-        """Add Address When there are not address """
-        self.logger.info("Hashing shipping address selection/creation")
-
+        self.logger.info("Handling shipping address selection or generation parameters")
         chk.handle_shipping_address(
             "Bimalesh",
             "9864378899",
@@ -65,29 +70,26 @@ class Test_End_To_End_Checkout(BaseTest):
             "560076"
         )
 
-        """Dymanic overwrite choice"""
+    def test_04_payment_and_order_placement(self):
+        """Step 4: Execute payment methodology allocation and validate final order placement status."""
+        self.logger.info("Executing Step 4: Payment Routing and Order Verification")
+        chk = CheckoutPage(self.driver)
         payment_choice = "COD"
-        self.logger.info("PAYENT COD")
-        if payment_choice =="COD":
+        
+        if payment_choice == "COD":
+            self.logger.info("Selecting payment methodology: Cash On Delivery")
             chk.selected_payment_and_place_order()
         else:
+            self.logger.info("Selecting payment methodology: Online Transaction")
             chk.selected_payment_and_place_order(method="ONLINE")
         
         time.sleep(5)
 
-        """Order placed """
         order_status = chk.get_order_status_text()
-        order_staus_lower = order_status.lower()
-        self.logger.info(f"Captured order_Status:'{order_status}'")
+        order_status_lower = order_status.lower()
+        self.logger.info(f"Captured UI order confirmation node: {order_status}")
 
-        assert "placed" in order_staus_lower or "confirmation" in order_staus_lower, \
-            f"❌ Test Failed: Automation landed on incorrect routing node: '{order_status}'"
+        assert "placed" in order_status_lower or "confirmation" in order_status_lower, \
+            f"Validation check failed: System landed on incorrect routing node: {order_status}"
         
-        self.logger.info("*********** END SUITE: ORDER PLACEMENT TEST 100% PASSED ***********")
-
-    
-
-
-
-
-
+        self.logger.info("End-to-End Checkout and Order Placement pipeline evaluated successfully.")

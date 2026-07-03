@@ -1,39 +1,37 @@
-
 import os
 import time
+import pytest
 from .basetest import BaseTest
 from PageObjects.LoginPage import LoginPage
 from Utilities.customLogger import LogGen
-import pytest
 
 class Test_002_Direct_Login(BaseTest):
     logger = LogGen.loggen()
     
-    # Robust Fallback Matrix: If environment is None, use static string
-    user_email = os.getenv("LOGIN_USERNAME") if os.getenv("LOGIN_USERNAME") else "bimaleshy49@gmail.com"
-    user_password = os.getenv("LOGIN_PASSWORD") if os.getenv("LOGIN_PASSWORD") else "Password@123"
+    user_email = os.getenv("LOGIN_USERNAME") or "bimaleshy49@gmail.com"
+    user_password = os.getenv("LOGIN_PASSWORD") or "Password@123"
 
-    def test_01_direct_login_invlaid(self):
-        self.logger.info("*************** STARTING INVALID LOGIN TEST ***************")
+    def test_01_direct_login_invalid(self, fresh_url):
+        """Verify that system blocks unauthorized access when using an incorrect password."""
+        self.logger.info("Executing test case: Direct Login Invalid Credentials")
         lp = LoginPage(self.driver)
 
         lp.click_navbar_login()
-         
-        self.logger.info("Sending valid email with an incorrect password")
+        
+        self.logger.info("Submitting valid email with an incorrect password")
         lp.login_direct(self.user_email, "wrong@pass123")
 
         error_box_text = lp.get_login_error_text().lower()
-        self.logger.info(f"Caught Error Box Text: {error_box_text}")
+        self.logger.info(f"Captured UI error message: {error_box_text}")
 
-        assert "invalid" in error_box_text or "credentials" in error_box_text or "wrong" in error_box_text, f"not match box text"
-
-        # Verify logout button is not visible
-        assert lp.is_logout_button_visible() == False
-        self.logger.info("🎉 PASSED: SYSTEM SUCCESSFULLY blocked the unauthorized access.")
+        assert "invalid" in error_box_text or "credentials" in error_box_text or "wrong" in error_box_text, f"Validation check failed: {error_box_text}"
+        assert lp.is_logout_button_visible() is False
+        self.logger.info("Test passed: System successfully blocked unauthorized access.")
     
-    @pytest.mark.skip(reason="Skipping manual OTP input in Jenkins")
-    def test_02_direct_login_valid(self):
-        self.logger.info("*************** STARTING VALID OTP LOGIN TEST ***************")
+    @pytest.mark.skip(reason="Skipping manual OTP input in Jenkins pipeline")
+    def test_02_direct_login_valid(self, fresh_url):
+        """Verify successful user authentication with valid credentials and manual OTP verification."""
+        self.logger.info("Executing test case: Direct Login Positive Flow")
         lp = LoginPage(self.driver)
         
         lp.click_navbar_login()
@@ -41,11 +39,10 @@ class Test_002_Direct_Login(BaseTest):
         self.logger.info(f"Attempting authorization for user: {self.user_email}")
         lp.login_direct(self.user_email, self.user_password)
 
-        self.logger.info("MANUAL ACTION: Enter OTP and click verify button...")
-        time.sleep(25) # Wait 25 seconds to enter OTP manually
-        
-        time.sleep(2) # Landing stabilization
+        self.logger.info("Pausing execution for manual OTP entry on the browser screen...")
+        time.sleep(25)
+        time.sleep(2) 
         
         status = lp.is_logout_button_visible()
-        assert status == True, "❌ Login Flow Failed: Logout dropdown flow element not located!"
-        self.logger.info("🎉 SUCCESS: Direct login validation with OTP Confirmed!")
+        assert status is True, "Login validation failed: Logout component not located."
+        self.logger.info("Test passed: Direct login validation with OTP confirmed.")

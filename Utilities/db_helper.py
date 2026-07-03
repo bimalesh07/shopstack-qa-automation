@@ -11,13 +11,13 @@ class DbHelper:
         try:
             # Create cursor from the connection
             cursor = connection.cursor()
-            DbHelper.logger.info(f"💾 Executing DB Query: {query}")
+            DbHelper.logger.info(f" Executing DB Query: {query}")
             
             cursor.execute(query)
             result = cursor.fetchall()
             return result
         except Exception as e:
-            DbHelper.logger.error(f"❌ SQL Select Error: {e}")
+            DbHelper.logger.error(f"SQL Select Error: {e}")
             return None
         finally:
             if cursor:
@@ -29,14 +29,14 @@ class DbHelper:
         cursor = None
         try:
             cursor = connection.cursor()
-            DbHelper.logger.info(f"💾 Executing DB Write Query: {query}")
+            DbHelper.logger.info(f"Executing DB Write Query: {query}")
             
             cursor.execute(query)
             connection.commit()  # Commit transaction
             return True
         
         except Exception as e:
-            DbHelper.logger.error(f"❌ SQL Write Error: {e}")
+            DbHelper.logger.error(f"SQL Write Error: {e}")
             connection.rollback()  # Rollback on error
             return False
         finally:

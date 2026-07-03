@@ -29,3 +29,6 @@ Logs/*.log
 # 6. OS temporary files
 .DS_Store
 Thumbs.db
+
+jekrinslocals.txt
+jekrinswith_smoke_res.txt

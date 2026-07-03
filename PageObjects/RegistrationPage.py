@@ -78,7 +78,7 @@ class RegistrationPage:
             self.logger.info("Clicking Create Vendor Account Button")
             self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_create_vendor_xpath))).click()
     
-    # Error handler: Gets text from both HTML5 tooltip and custom box
+  
     def get_any_validation_error_text(self, field_type="name"):
         # 1. Check if browser native HTML5 tooltip popped up (Pic 1, 2, 3)
         try:
@@ -111,7 +111,7 @@ class RegistrationPage:
     def is_registration_successful(self, role_type):
     #   """  try:
     #         if role_type.lower() == "customer":
-    #             self.logger.info("🔍 Scanning for Customer Violet Profile Icon safely...")
+    #             self.logger.info("Scanning for Customer Violet Profile Icon safely...")
     #             # Fix: added explicit wait for visibility of element to handle rendering delay
     #             element = self.wait.until(EC.visibility_of_element_located((By.XPATH, self.success_customer_indicator_xpath)))
     #             if element:
@@ -126,19 +126,18 @@ class RegistrationPage:
     #     except:
     #         self.logger.error(f"Landing validation component target timed out for role: {role_type}")
     #         return False"""
-          #ULTRA HACK: Bina kisi locator ke direct page content verification matrix
+          #ULTRA without : Bina kisi locator ke
 
         time.sleep(3) # Buffer wait for dashboard text to load
         try:
             page_text = self.driver.page_source.lower()
             if role_type.lower() == "customer":
-                self.logger.info("🔍 Scanning page source content for Customer markers...")
+                self.logger.info("Scanning page source content for Customer markers...")
                 # Toast Match: If screen shows verified, successfully or logout
                 if "verified" in page_text or "successfully" in page_text or "logout" in page_text:
                     self.logger.info("Customer landing confirmed via validation message matrix.")
                     return True
-              
-                
+    
             elif role_type.lower() == "vendor":
                 self.logger.info("Scanning page source content for Vendor markers...")
                 if "product" in page_text or "logout" in page_text:

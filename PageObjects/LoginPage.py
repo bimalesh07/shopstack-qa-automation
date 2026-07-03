@@ -6,15 +6,15 @@ from Utilities.customLogger import LogGen
 import time
 
 class LoginPage:
-    # 🎯 1. Navbar Login Button
+    # Navbar Login Button
     button_navbar_login_xpath = "//span[@class='hidden md:block']"
     
-    # 🎯 2. Login Form Fields
+    # Login Form Fields
     textbox_email_xpath = "//input[@placeholder='you@example.com']"
     textbox_password_xpath = "//input[@type='password']"
     button_signin_xpath = "//button[@type='submit']"
     
-    # 🎯 3. Validations & Dynamic Popups
+    # Validations & Dynamic Popups
     text_login_error_xpath = "//div[contains(@class,'text-rose-600') or contains(text(),'invalid') or contains(text(),'password')]"
     
     # Fix: Corrected variable name ('BK' avatar button based on screenshot)
@@ -29,7 +29,7 @@ class LoginPage:
         self.wait = WebDriverWait(self.driver, 15)
 
     def click_navbar_login(self):
-        self.logger.info("👉 Clicking NAVBAR LOGIN button from homepage...")
+        self.logger.info("Clicking NAVBAR LOGIN button from homepage...")
         element = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_navbar_login_xpath)))
         self.driver.execute_script("arguments[0].click();", element)
 
@@ -42,22 +42,22 @@ class LoginPage:
         pass_field.clear()
         if password: pass_field.send_keys(password)
 
-        self.logger.info("🚀 Clicking Sign In Form Submit Button...")
+        self.logger.info("Clicking Sign In Form Submit Button...")
         self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_signin_xpath))).click()
 
     def get_login_error_text(self):
         try:
-            self.logger.info("⏳ Waiting for backend error validation message alert...")
+            self.logger.info("Waiting for backend error validation message alert...")
             element = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, self.text_login_error_xpath))
             )
             return element.text
         except Exception as e:
-            self.logger.error("⚠️ Error block locator timeout.")
+            self.logger.error(" Error block locator timeout.")
             return ""
 
     def is_logout_button_visible(self):
-        self.logger.info("🔍 Step 1: Checking if User Profile Avatar (BK) is painted on dashboard...")
+        self.logger.info("step 1: Checking if User Profile Avatar (BK) is painted on dashboard...")
         try:
             local_wait = WebDriverWait(self.driver, 12)
             
@@ -65,7 +65,7 @@ class LoginPage:
             avatar_btn = local_wait.until(
                 EC.element_to_be_clickable((By.XPATH, self.button_user_avatar_xpath))
             )
-            self.logger.info("🎯 Profile Avatar found! Clicking it to open dynamic dropdown menu...")
+            self.logger.info("Profile Avatar found! Clicking it to open dynamic dropdown menu...")
             self.driver.execute_script("arguments[0].click();", avatar_btn)
             
             time.sleep(1.5) # Wait for dropdown slide transition
@@ -76,16 +76,16 @@ class LoginPage:
             )
             
             if logout_btn.is_displayed():
-                self.logger.info("🎯 Success: LOGOUT button component is strictly visible inside dropdown menu.")
+                self.logger.info("Success: LOGOUT button component is strictly visible inside dropdown menu.")
                 # Close the dropdown menu to avoid blocking the SHOP link click
-                self.logger.info("🔄 Closing the profile dropdown menu to clear the UI overlay...")
+                self.logger.info("Closing the profile dropdown menu to clear the UI overlay...")
                 self.driver.execute_script("arguments[0].click();", avatar_btn)
-                time.sleep(1) # Small stabilization wait for menu to close
+                time.sleep(1) 
                 
                 return True
             
             return False  
         
         except Exception as e:
-            self.logger.warning("⚠️ Component Timeout: User is not logged in or avatar menu didn't open.")
+            self.logger.warning("Component Timeout: User is not logged in or avatar menu didn't open.")
             return False

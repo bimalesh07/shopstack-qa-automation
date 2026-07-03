@@ -1,4 +1,3 @@
-# File Location: Test_Case/test_api/test_api_ddt.py
 import pytest
 import json
 from Utilities.customLogger import LogGen
@@ -15,21 +14,14 @@ class Test_ShopStack_API_DDT_Suite:
     Capture_access_token = None
     Capture_refresh_token = None
 
-    #Pytest DDT Loop
     @pytest.mark.parametrize("test_case", load_fresh_test_data())
     def test_login_api_data_driven(self, auth_client, test_case):
-        self.logger.info("Fresh DDT Handle both Positive and Negative login Test Data Form Test_Data")
-        self.logger.info(f"🎬 [RUNNING SCENARIO] ---> {test_case['scenario']}")
+        self.logger.info(f"Starting test scenario: {test_case['scenario']}")
         
-        print(f"\n🚀 Executing: {test_case['scenario']} for Email: '{test_case['email']}'")
-        
-        #  Live API hit using auth_client fixture
         response = auth_client.login(test_case["email"], test_case["password"])
         
-        # ⚖️ Validation 1: Status Code Check
-        assert response.status_code == test_case["expected_status"], f"FAILED: Status code mismatch for {test_case['scenario']}"
+        assert response.status_code == test_case["expected_status"], f"Status code mismatch for {test_case['scenario']}"
 
-        # 🧠 Conditional Flow for Positive Cases
         if test_case["is_positive"] is True:
             response_json = response.json()
             tokens_dict = response_json.get("tokens", {})
@@ -40,7 +32,7 @@ class Test_ShopStack_API_DDT_Suite:
             Test_ShopStack_API_DDT_Suite.Capture_access_token = access
             Test_ShopStack_API_DDT_Suite.Capture_refresh_token = refresh
 
-            assert Test_ShopStack_API_DDT_Suite.Capture_access_token is not None, "FAILED: No Token Found!"
-            self.logger.info("Token Capture Successfully for valid User")
+            assert Test_ShopStack_API_DDT_Suite.Capture_access_token is not None, "Error: Access token not found"
+            self.logger.info("Tokens captured successfully for valid user login")
         else:
-            self.logger.info("ERROR Handled correctly by server as expected")
+            self.logger.info("Negative scenario handled correctly by server as expected")

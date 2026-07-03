@@ -7,11 +7,10 @@ import time
 from selenium.common.exceptions import StaleElementReferenceException
 
 class ProductCartPage:
-    # NAVBAR SHOP LINK & INITIAL LOADING SPINNER
     button_shop_nav_xpath = "//a[normalize-space()='Shop']"
     loading_spinner_xpath = "//*[contains(text(), 'Curating best products for you')]"
     
-    # REACTIVE FILTERS & SORTING CONTROLLERS (Super Robust Dynamic Locator combo)
+    # REACTIVE FILTERS & SORTING CONTROLLERS 
     button_filters_toggle_xpath = (
         "//button[contains(., 'Filter') or contains(., 'FILTER')]"
         " | //span[contains(., 'Filter') or contains(., 'FILTER')]"
@@ -42,7 +41,7 @@ class ProductCartPage:
         self.logger = LogGen.loggen()
 
     def navigate_to_shop_page(self):
-        self.logger.info("👉 Force-Clicking NAVBAR SHOP link using JavaScript Pipeline...")
+        self.logger.info("Force-Clicking NAVBAR SHOP link using JavaScript Pipeline...")
         shop_nav = self.wait.until(EC.presence_of_element_located((By.XPATH, self.button_shop_nav_xpath) if hasattr(By, '滿足') else (By.XPATH, self.button_shop_nav_xpath)))
         self.driver.execute_script("arguments[0].click();", shop_nav)
         
@@ -86,11 +85,11 @@ class ProductCartPage:
             self.logger.warning("Reactive loader didn't appear or cleared out instantly.")
 
         # Post-loader wait to allow layout to load completely
-        self.logger.info("⏳ Giving 3 seconds breathing buffer for DOM initialization post-refresh...")
+        self.logger.info("Giving 3 seconds breathing buffer for DOM initialization post-refresh...")
         time.sleep(3)
 
         #INPUT MAX PRICE (With Stale-Element Exception Proof Loop )
-        self.logger.info("🔍 Entering Stale-Proof Input Loop for Max Price Field...")
+        self.logger.info("Entering Stale-Proof Input Loop for Max Price Field...")
         
         for attempt in range(1, 4): # Retry 3 times if stale element exception occurs
             try:
@@ -106,7 +105,7 @@ class ProductCartPage:
                 
                 # Type the price
                 max_field.send_keys(max_price)
-                self.logger.info(f"📥 Success: Max Price strictly set to: {max_price}")
+                self.logger.info(f"Success: Max Price strictly set to: {max_price}")
                 break # Exit loop if input is successful
                 
             except Exception as e:
@@ -121,7 +120,7 @@ class ProductCartPage:
       
 
     def apply_sorting_filter(self, choice):
-        self.logger.info(f"🎯 Attempting UI interaction on sorting element for choice: {choice}")
+        self.logger.info(f"Attempting UI interaction on sorting element for choice: {choice}")
         dropdown_head = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_sort_dropdown_xpath)))
         self.driver.execute_script("arguments[0].click();", dropdown_head)
         self.logger.info("Main dropdown element clicked and options list expanded.")

@@ -1,6 +1,6 @@
-
 import time
 import os
+import pytest
 from .basetest import BaseTest
 from PageObjects.ProductCartPage import ProductCartPage
 from PageObjects.LoginPage import LoginPage
@@ -9,60 +9,66 @@ from selenium.webdriver.common.by import By
 
 class Test_004_Shop_Validation(BaseTest):
     logger = LogGen.loggen()
-    user_email = os.getenv("LOGIN_USERNAME") if os.getenv("LOGIN_USERNAME") else "bimaleshy49@gmail.com"
-    user_password = os.getenv("LOGIN_PASSWORD") if os.getenv("LOGIN_PASSWORD") else "Password@123"
+    
+    user_email = os.getenv("LOGIN_USERNAME") or "bimaleshy49@gmail.com"
+    user_password = os.getenv("LOGIN_PASSWORD") or "Password@123"
 
-    def test_04_full_shop_page(self):
-        self.logger.info("*********** START SUITE: LOGIN AND SHOP MODULE ***********")
-        
-        # 🔑 STAGE 1: AUTHORIZATION PRE-REQUISITE
-        self.logger.info("Step 1: Running direct valid authorization sequence...")
+    def test_01_user_login(self, fresh_url):
+        """Step 1: Execute login flow and handle manual OTP entry."""
+        self.logger.info("Executing Step 1: User Login Validation")
         lp = LoginPage(self.driver)
         lp.click_navbar_login()
         lp.login_direct(self.user_email, self.user_password)
 
-        self.logger.info("⏳ MANUAL ACTION REQUIRED: Enter OTP right now in browser window...")
+        self.logger.info("Pausing execution for manual OTP entry on the browser screen...")
         time.sleep(15)
-        assert lp.is_logout_button_visible() == True, "❌ Critical Break: Active login session tracking missing!"
+        
+        assert lp.is_logout_button_visible() is True, "Validation check failed: Active login session tracking missing."
+        self.logger.info("User login successfully verified.")
 
-        self.logger.info("🟢 Session confirmed! Navigating to shop page context...")
-
-        # 🛒 STAGE 2: SHOP PAGE MODULE PIPELINE
-        self.logger.info("Step 2: Triggering shop module functional features...")
+    def test_02_apply_shop_filters(self):
+        """Step 2: Navigate to shop page, apply reactive price filters, and modify catalog sorting."""
+        self.logger.info("Executing Step 2: Shop Page Catalog Filters Validation")
+        
         sp = ProductCartPage(self.driver)
         sp.navigate_to_shop_page()
 
-        # Input reactive price range parameters
+        # Apply price range parameters
         sp.apply_reactive_price_filters("300", "2000")
 
-        # Validation Proof 1: Verify filter implementation state using Reset button anchor
-        self.logger.info("🔬 Investigating validation anchors for active price filters...")
+        # Validation Proof 1: Verify filter state using Reset button anchor
+        self.logger.info("Verifying validation anchors for active price filters")
         reset_visible = sp.wait.until(
             lambda d: d.find_element(By.XPATH, sp.button_reset_filters_xpath).is_displayed()
         )
-        assert reset_visible == True, "❌ Proof 1 Failed: Filter layout engine state mismatch!"
-        self.logger.info("🟢 PROOF 1 PASSED: Reactive price filters state updated cleanly on screen.")
+        assert reset_visible is True, "Validation check failed: Filter layout engine state mismatch."
+        self.logger.info("Reactive price filters state updated cleanly on screen.")
 
-        # Trigger dynamic sorting engine
+        # Trigger sorting modification
         sp.apply_sorting_filter("low to high")
-        self.logger.info("🟢 Sorting modification parameter updated to Low to High.")
+        self.logger.info("Sorting modification parameter updated to Low to High.")
+
+    def test_03_wishlist_and_product_details(self):
+        """Step 3: Interact with product wishlist, capture toast alerts, and verify product details redirection."""
+        self.logger.info("Executing Step 3: Wishlist and Product Details Layer Validation")
+        
+        sp = ProductCartPage(self.driver)
 
         # Validation Proof 2: Wishlist transaction alert validation
-        self.logger.info("🔬 Investigating Wishlist heart interaction feedback text node...")
+        self.logger.info("Verifying wishlist interaction feedback overlay notification")
         toast_message_text = sp.click_wishlist_heart_and_capture_toast()
         
         assert "added" in toast_message_text.lower() or "wishlist" in toast_message_text.lower(), \
-            f"❌ Proof 2 Failed: Toast text node validation mismatch! Captured: '{toast_message_text}'"
-        self.logger.info("🟢 PROOF 2 PASSED: Wishlist transaction verified via overlay notification toast.")
+            f"Validation check failed: Toast notification mismatch. Captured: '{toast_message_text}'"
+        self.logger.info("Wishlist transaction verified via overlay notification toast.")
 
-        # Step into single product view details layer
+        # Navigate into single product view details layer
         sp.click_product_to_open_details()
 
         # Validation Proof 3: Details landing page landmark validation
-        self.logger.info("🔬 Investigating Product Details Page redirection landmark element structure...")
+        self.logger.info("Verifying product details page redirection landmark elements")
         redirection_proof = sp.is_details_page_opened_successfully()
 
-        assert redirection_proof == True, "❌ Proof 3 Failed: Target product details view layout expansion broke!"
-        self.logger.info("🟢 PROOF 3 PASSED: Product details page redirection confirmed by landmark elements.")
-
-        self.logger.info("🎉 SUCCESSFUL SUITE: Full independent Shop Module stack evaluated with 100% precision!")
+        assert redirection_proof is True, "Validation check failed: Target product details view layout expansion failed."
+        self.logger.info("Product details page redirection confirmed by landmark elements.")
+        self.logger.info("Shop module workflow pipeline completed successfully.")

@@ -1,12 +1,12 @@
 import pytest
 from Utilities.db_helper import DbHelper
 
-class Test_Register_user_and_verify_in_database:
+class Test_Register_User_And_Verify_In_Database:
     
     def test_register_user_and_verify_in_database(self, auth_client, db_session):
+        """Verify successful user lifecycle entry via API signup and cross-validate record state inside the database layer."""
         test_email = "bimaleshky@gmail.com"
         
-        # Fix: replaced '=' with ':' in dictionary
         payload = {
             "email": test_email,
             "name": "yadavbimalesh",
@@ -15,26 +15,16 @@ class Test_Register_user_and_verify_in_database:
             "password2": "1234567bky"
         }
         
-        # 1. Call API to sign up
+        # 1. API Endpoint Target Invocation
         response = auth_client.Signup(payload, role="customers")
+        assert response.status_code == 201, f"Validation check failed: Registration request rejected with status code {response.status_code}"
         
-        # Verify if user registered successfully
-        assert response.status_code == 201, f"❌ Registration failed! Status code: {response.status_code}"
-        print("✅ Step 1: User Registered via API successfully!")
-
-        # --------------------------------------------------------------------
-        # VERIFY THE DB TESTING
-        # --------------------------------------------------------------------
-        # Table is users_user
+        # 2. Database Persistence Layer Cross-Verification
         sql_query = f"SELECT name FROM users_user WHERE email = '{test_email}';"
         
-        # Use DbHelper select method
-        db_result = DbHelper.execute_select(self.db, sql_query) 
+        # Access database execution framework utilizing the active db_session context
+        db_result = DbHelper.execute_select(db_session, sql_query) 
 
-        # Final Checking (Assertions)
-        assert db_result is not None, "❌ Fail: User not found in database!"
-        
-        # If db_result is a tuple, check the first element
-        assert db_result[0] == "yadavbimalesh", f"❌ Fail: Incorrect name in DB! Found: {db_result[0]}"
-        
-        print("✅ Step 2: Database verified successfully! Data is absolute perfect.")
+        # Structural Integrity Validation
+        assert db_result is not None, "Validation check failed: Targeted user record not located inside the database query response."
+        assert db_result[0] == "yadavbimalesh", f"Validation check failed: Name property property mismatch. Captured: {db_result[0]}"
