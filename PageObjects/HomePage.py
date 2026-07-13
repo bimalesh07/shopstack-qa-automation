@@ -28,12 +28,12 @@ class ProductPage:
         self.wait = WebDriverWait(self.driver, 15)
 
     def click_dark_mode(self):
-        self.logger.info("🌓 Clicking Dark Mode toggle...")
+        self.logger.info("Clicking Dark Mode toggle...")
         element = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_dark_mode_xpath)))
         self.driver.execute_script("arguments[0].click();", element)
     
     def click_light_mode(self):
-        self.logger.info("☀️ Clicking Light Mode toggle...")
+        self.logger.info("Clicking Light Mode toggle...")
         element = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_Light_mode_xpath)))
         self.driver.execute_script("arguments[0].click();", element)
     
@@ -52,7 +52,7 @@ class ProductPage:
         self.wait.until(EC.element_to_be_clickable((By.XPATH, self.link_shop_nav_xpath))).click()
 
     def serach_product(self, item_name):
-        self.logger.info(f"🔍 Searching Product: {item_name}")
+        self.logger.info(f"Searching Product: {item_name}")
         box = self.wait.until(EC.presence_of_element_located((By.XPATH, self.textbox_search_xpath)))
         box.clear()
         box.send_keys(item_name)

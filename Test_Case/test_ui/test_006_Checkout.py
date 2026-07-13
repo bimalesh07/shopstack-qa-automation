@@ -13,7 +13,7 @@ class Test_End_To_End_Checkout(BaseTest):
     user_password = os.getenv("LOGIN_PASSWORD") or "Password@123"
     logger = LogGen.loggen()
 
-    def test_01_user_authentication(self, fresh_url):
+    def _execute_user_authentication(self):
         """Step 1: Execute valid user authentication sequence and pass OTP check."""
         self.logger.info("Executing Step 1: User Authentication Sequence")
         lp = LoginPage(self.driver)
@@ -21,12 +21,13 @@ class Test_End_To_End_Checkout(BaseTest):
         lp.login_direct(self.user_email, self.user_password)
         
         self.logger.info("Pausing execution for manual OTP entry on the browser screen...")
-        time.sleep(20)
+        time.sleep(20)  # OTP fill karne ka time mila
         
         assert lp.is_logout_button_visible() is True, "Validation check failed: Active login session tracking missing."
         self.logger.info("User login successfully verified.")
 
-    def test_02_add_product_to_cart(self):
+
+    def _execute_add_product_to_cart(self):
         """Step 2: Navigate to shop module, open details, and add the target item to cart."""
         self.logger.info("Executing Step 2: Catalog Navigation and Cart Inclusion")
         pc = ProductCartPage(self.driver)
@@ -49,7 +50,7 @@ class Test_End_To_End_Checkout(BaseTest):
         else:
             assert False, f"Validation check failed: Unexpected toast string captured in Step A: {toast_success}"
 
-    def test_03_shipping_address_configuration(self):
+    def _execute_shipping_address_configuration(self):
         """Step 3: Redirect to shopping cart context and manage shipping layout coordinates."""
         self.logger.info("Executing Step 3: Shopping Cart Redirection and Shipping Setup")
         chk = CheckoutPage(self.driver)
@@ -70,7 +71,7 @@ class Test_End_To_End_Checkout(BaseTest):
             "560076"
         )
 
-    def test_04_payment_and_order_placement(self):
+    def _execute_payment_and_order_placement(self):
         """Step 4: Execute payment methodology allocation and validate final order placement status."""
         self.logger.info("Executing Step 4: Payment Routing and Order Verification")
         chk = CheckoutPage(self.driver)
@@ -91,5 +92,15 @@ class Test_End_To_End_Checkout(BaseTest):
 
         assert "placed" in order_status_lower or "confirmation" in order_status_lower, \
             f"Validation check failed: System landed on incorrect routing node: {order_status}"
+
+
+    def test_complete_e2e_checkout_flow(self, fresh_url):
+        self.logger.info("========= STARTING MAIN E2E CHECKOUT SUITE =========")
         
-        self.logger.info("End-to-End Checkout and Order Placement pipeline evaluated successfully.")
+        # Line-by-line saare steps ek hi browser window mein chalenge makkhan ki tarah!
+        self._execute_user_authentication()
+        self._execute_add_product_to_cart()
+        self._execute_shipping_address_configuration()
+        self._execute_payment_and_order_placement()
+        
+        self.logger.info("========= E2E PIPELINE PASSED COMPLETELY RESUME =========")

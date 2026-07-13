@@ -13,7 +13,6 @@ pipeline {
             description: 'Specify the test file matching criteria keyword (applicable for SINGLE_FILE only).'
         )
     }
-
     environment {
         PYTHONIOENCODING     = 'utf-8'
         SECRET_LOCAL_DB_PASS = credentials('SHOPSTACK_DB_PASS_SECRET')
@@ -22,7 +21,6 @@ pipeline {
         SECRET_VEND_PASS      = credentials('VENDOR_PASS_SECRET')
         SECRET_API_PASS       = credentials('API_TEST_PASS_SECRET')
     }
-
     stages {
         stage('1. Environment Setup & Recreate .env') {
             steps {

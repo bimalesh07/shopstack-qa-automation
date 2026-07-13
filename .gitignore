@@ -1,4 +1,4 @@
-# 📄 .gitignore - ShopStack Automation Framework
+# .gitignore - ShopStack Automation Framework
 
 # 1. Environment Variables (Secrets)
 .env
@@ -32,3 +32,11 @@ Thumbs.db
 
 jekrinslocals.txt
 jekrinswith_smoke_res.txt
+
+# System Generated Execution Artifacts (Logs & Reports)
+Logs/*.log
+Logs/
+Reports/*.html
+Reports/
+ScreenShots/*.png
+ScreenShots/

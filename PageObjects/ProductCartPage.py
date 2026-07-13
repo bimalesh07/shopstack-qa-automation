@@ -57,7 +57,7 @@ class ProductCartPage:
         self.logger.info("Giving 4 seconds for initial shop layout stabilization...")
         time.sleep(4)
         
-        self.logger.info("🔍 Expanding Filters panel using Master Combo Xpath...")
+        self.logger.info("Expanding Filters panel using Master Combo Xpath...")
         filters_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, self.button_filters_toggle_xpath)))
 
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", filters_btn)
@@ -144,14 +144,13 @@ class ProductCartPage:
         target_option_element = self.wait.until(EC.element_to_be_clickable((By.XPATH, target_xpath)))
         self.driver.execute_script("arguments[0].click();", target_option_element)
         
-        self.logger.info(f"🎉 Success: Selected option node parameter updated to state: {choice}")
+        self.logger.info(f"Success: Selected option node parameter updated to state: {choice}")
         time.sleep(3)
         
     def click_wishlist_heart_and_capture_toast(self):
         self.logger.info("Clicking Wishlist Heart button...")
         heart_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.button_wishlist_heart_xpath)))
         
-        # Fix: Try standard click first
         # This is safe if there is no UI overlay issue.
         try:
             heart_btn.click()
