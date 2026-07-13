@@ -22,5 +22,4 @@ def setup(request):
 
 """comand"""
 pytest Test_Case/test_ui/ --browser edge
-# Ya fir Firefox ke liye:
 pytest Test_Case/test_ui/ --browser firefox

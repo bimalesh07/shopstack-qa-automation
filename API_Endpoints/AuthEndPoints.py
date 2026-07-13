@@ -54,8 +54,7 @@ class AuthEndpoints:
         return response
     
     def login(self, email, password):
-        """LOGIN: Credentials we send to login"""
-        url = f"{self.base_url}/login/"  # Added trailing slash '/'
+        url = f"{self.base_url}/login/"  
         payload = {"email": email, "password": password}
         
         self.logger.info(f"--- Attempting secure login ---")
@@ -81,7 +80,6 @@ class AuthEndpoints:
         return response
     
     def logout(self, refresh_token, access_token=None):
-        """Logout by sending refresh token in body and access token in headers"""
         url = f"{self.base_url}/logout/"
         payload = {"refresh": refresh_token}
         
