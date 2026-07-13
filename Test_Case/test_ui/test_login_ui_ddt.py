@@ -30,6 +30,7 @@ class Test_Ui_Login_DDT(BaseTest):
         else:
             if test_case.get("is_html5_validation") is True:
                 if test_case['email'] == "":
+
                     field = self.driver.find_element(By.XPATH, lp.textbox_email_xpath)
                 elif test_case["password"] == "":
                     field = self.driver.find_element(By.XPATH, lp.textbox_password_xpath)

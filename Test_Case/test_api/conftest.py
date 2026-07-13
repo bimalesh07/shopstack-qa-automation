@@ -11,6 +11,18 @@ logger = LogGen.apiloggen()
 FIXED_TEST_EMAIL = ReadEnv.get_test_user()
 FIXED_PASSWORD = ReadEnv.get_test_password()
 
+
+
+@pytest.fixture(scope="session")
+def api_context():
+    logger.info("********Setup Api *********")
+    base_url = ReadEnv.get_api_base_url()
+    
+
+
+    
+
+
 @pytest.fixture(scope="class")
 def auth_client():
     logger.info("Connecting to Auth endpoint...")

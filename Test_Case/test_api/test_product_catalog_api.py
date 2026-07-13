@@ -47,7 +47,6 @@ class Test_ShopStack_Products_CataLog_Endpoints:
     def test_prod_03_get_all_category(self, product_client):
         self.logger.info("Step 3: Fetch All Categories")
         
-        # 🎯 Agar product_client mein spelling mistake theek kar li hai, toh ye direct chalega
         response = product_client.get_all_categories()
         assert response.status_code == 200
 

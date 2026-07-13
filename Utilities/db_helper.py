@@ -6,7 +6,6 @@ class DbHelper:
 
     @staticmethod
     def execute_select_query(connection, query):
-        """Execute SELECT query to fetch data"""
         cursor = None
         try:
             # Create cursor from the connection
