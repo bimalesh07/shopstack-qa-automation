@@ -2,9 +2,7 @@ import pytest
 from Utilities.customLogger import LogGen
 
 class Test_ShopStack_Products_CataLog_Endpoints:
-    
     logger = LogGen.apiloggen()
-    
     extracted_product_id = None
     extracted_product_slug = None
     extracted_category_slug = None

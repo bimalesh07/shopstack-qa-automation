@@ -1,6 +1,6 @@
 import time
 import pytest
-from Test_Case.basetest import BaseTest
+from .basetest import BaseTest
 from PageObjects.HomePage import ProductPage
 from Utilities.customLogger import LogGen
 
@@ -8,8 +8,7 @@ class Test_003_Guest_Smoke_Flows(BaseTest):
     logger = LogGen.loggen()
 
     def test_guest_complete_smoke_journey(self, fresh_url):
-        """Verify the complete end-to-end guest user flow and authentication guardrails."""
-        self.logger.info("Executing test case: Guest Complete Smoke Journey")
+        self.logger.info(" Guest Complete Smoke Journey")
         
         prod = ProductPage(self.driver)
 
@@ -34,7 +33,7 @@ class Test_003_Guest_Smoke_Flows(BaseTest):
         # 5. Verify authentication enforcement on Wishlist interaction
         prod.click_heart_icon()
         time.sleep(2)
-        assert prod.is_login_page_enforced() is True, "Validation check failed: Login redirection screen not initialized."
+        assert prod.is_login_page_enforced() is True, "Login redirection screen not initialized."
         self.logger.info("Verified guest access constraints enforced for wishlist interaction.")
 
         # Re-synchronize browser state for product catalogue
@@ -45,11 +44,11 @@ class Test_003_Guest_Smoke_Flows(BaseTest):
         prod.click_first_listed_product()
         time.sleep(3)
         assert self.driver.find_element("xpath", prod.text_product_title_xpath).is_displayed() is True, \
-            "Validation check failed: Product description landing lookup failed."
+            " Product description landing lookup failed."
         self.logger.info("Target metadata loaded successfully in guest session.")
         
         # 7. Checkout authentication guard validation
         prod.click_secure_checkout()
         time.sleep(3)
-        assert prod.is_login_page_enforced() is True, "Validation check failed: Checkout action leaked bypass constraints."
+        assert prod.is_login_page_enforced() is True, "Checkout action leaked bypass constraints."
         self.logger.info("Guest smoke suite validation execution completed successfully.")

@@ -24,8 +24,7 @@ class Test__001_User_Registration_Suite(BaseTest):
     v_desc = os.getenv("VENDOR_SHOP_DESC") or "We sell items fast."
 
     def test_01_registration_blank_fields_validation(self, fresh_url):
-        """Verify that native HTML5 validation blocks form submission with blank fields."""
-        self.logger.info("Executing test case: Registration Blank Fields Validation")
+        self.logger.info("Registration Blank Fields Validation")
         rp = RegistrationPage(self.driver)
         rp.login_btn()
         rp.got_to_signup_page()
@@ -39,11 +38,10 @@ class Test__001_User_Registration_Suite(BaseTest):
         
         assert "fill" in error_text or "required" in error_text, f"Validation check failed: {error_text}"
         assert rp.is_registration_successful("customer") is False
-        self.logger.info("Test passed: HTML5 native validation successfully blocked blank data entry.")
+        self.logger.info("HTML5 native validation successfully blocked blank data entry.")
 
     def test_02_customer_registration_invalid_email(self, fresh_url):
-        """Verify that HTML5 validation catches invalid email formats missing the '@' symbol."""
-        self.logger.info("Executing test case: Customer Registration Invalid Email Format")
+        self.logger.info("Customer Registration Invalid Email Format")
         rp = RegistrationPage(self.driver)
         rp.login_btn()
         rp.got_to_signup_page()
@@ -60,7 +58,7 @@ class Test__001_User_Registration_Suite(BaseTest):
         self.logger.info("Test passed: HTML5 validation successfully caught missing '@' parameter.")
 
     def test_03_customer_registration_missing_password(self, fresh_url):
-        """Verify that HTML5 validation blocks submission when the password field is left empty."""
+
         self.logger.info("Executing test case: Customer Registration Missing Password")
         rp = RegistrationPage(self.driver)
         rp.login_btn()
@@ -75,11 +73,10 @@ class Test__001_User_Registration_Suite(BaseTest):
         
         assert "fill" in error_text or "required" in error_text, f"Validation check failed: {error_text}"
         assert rp.is_registration_successful("customer") is False
-        self.logger.info("Test passed: HTML5 native tooltip blocked submission due to empty password.")
+        self.logger.info("HTML5 native tooltip blocked submission due to empty password.")
 
     def test_04_customer_registration_positive(self):
-        """Verify successful customer registration with valid credentials and manual OTP verification."""
-        self.logger.info("Executing test case: Customer Registration Positive Flow")
+        self.logger.info("Customer Registration Positive Flow")
         rp = RegistrationPage(self.driver)
         rp.login_btn()
         rp.got_to_signup_page()
@@ -93,5 +90,5 @@ class Test__001_User_Registration_Suite(BaseTest):
         time.sleep(3)
 
         reg_status = rp.is_registration_successful("customer")
-        assert reg_status is True, "Dashboard verification failed: Profile button element not found."
-        self.logger.info("Test passed: Registration verified via successful profile button appearance.")
+        assert reg_status is True, "Profile button element not found."
+        self.logger.info("Registration verified via successful profile button appearance.")

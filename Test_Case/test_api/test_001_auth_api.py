@@ -96,10 +96,10 @@ class Test_ShopStack_Auth_Endpoints:
         
         assert Test_ShopStack_Auth_Endpoints.received_token is not None, "Validation check failed: Access token collection failed."
     
-        self.logger.info("Authentication complete. Security access tokens captured successfully.")
+        self.logger.info("Security access tokens captured successfully.")
 
     def test_05_profile_and_logout_cleanup(self, auth_client):
-        self.logger.info("Starting Test Case: Profile Retrieval and Session Termination")
+        self.logger.info("Profile Retrieval and Session Termination")
         
         token = Test_ShopStack_Auth_Endpoints.received_token
         refresh_token = Test_ShopStack_Auth_Endpoints.received_refresh_token

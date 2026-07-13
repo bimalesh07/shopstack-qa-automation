@@ -7,7 +7,6 @@ from PageObjects.LoginPage import LoginPage
 from .basetest import BaseTest
 
 def load_ui_login_data():
-    """Load user credentials and validation matrix from the JSON data repository."""
     with open("Test_Data/ui_login_data.json", 'r', encoding="utf-8") as file:
         return json.load(file)
 
@@ -16,7 +15,6 @@ class Test_Ui_Login_DDT(BaseTest):
     
     @pytest.mark.parametrize("test_case", load_ui_login_data())
     def test_login_ddt(self, test_case, fresh_url):
-        """Execute data-driven authentication validation across multiple scenario profiles."""
         self.logger.info(f"Running Scenario: {test_case['senario']}")
 
         lp = LoginPage(self.driver)
@@ -28,8 +26,8 @@ class Test_Ui_Login_DDT(BaseTest):
             time.sleep(20)
             time.sleep(2)
             status = lp.is_logout_button_visible()
-            assert status is True, "Validation check failed: Logout component visibility evaluation returned False."
-            self.logger.info("Valid credential processing successfully verified via dashboard state confirmation.")
+            assert status is True, " Logout component visibility evaluation returned False."
+            self.logger.info("successfully verified via dashboard state confirmation.")
             
         else:
             self.logger.info("Processing target negative validation parameters")
@@ -43,5 +41,5 @@ class Test_Ui_Login_DDT(BaseTest):
             else:
                 real_error_text = lp.get_login_error_text()
             
-            assert test_case['expected_error'] in real_error_text, f"Validation check failed: Message node text mismatch. Captured: {real_error_text}"
+            assert test_case['expected_error'] in real_error_text, f" Message node text mismatch. Captured: {real_error_text}"
             self.logger.info("Negative test parameter matching criteria successfully validated.")

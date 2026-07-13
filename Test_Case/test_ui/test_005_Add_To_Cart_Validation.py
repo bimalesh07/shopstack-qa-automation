@@ -13,73 +13,61 @@ class Test_Add_To_Cart(BaseTest):
     logger = LogGen.loggen()
 
     def test_01_user_authentication(self, fresh_url):
-        """Step 1: Execute direct valid authorization sequence and pass OTP check."""
-        self.logger.info("Executing Step 1: User Authentication Sequence")
+        self.logger.info("Step 1: User Authentication")
         lp = LoginPage(self.driver)
         lp.click_navbar_login()
         lp.login_direct(self.user_email, self.user_password)
         
-        self.logger.info("Pausing execution for manual OTP entry on the browser screen...")
+        self.logger.info("Waiting for manual OTP...")
         time.sleep(15)
         
-        assert lp.is_logout_button_visible() is True, "Validation check failed: Active login session tracking missing."
+        assert lp.is_logout_button_visible() is True, "Login session failed."
         self.logger.info("Login verified successfully.")
 
     def test_02_initial_add_to_cart(self):
-        """Step 2: Navigate to shop module and execute the initial item addition sequence."""
-        self.logger.info("Executing Step 2: Product Catalogue Navigation and Initial Cart Addition")
-        
+        self.logger.info("Step 2: Initial Add to Cart")
         pc = ProductCartPage(self.driver)
         pc.navigate_to_shop_page()
         pc.click_product_to_open_details()
 
-        assert pc.is_details_page_opened_successfully() is True, "Validation check failed: Target product details view did not open."
-        self.logger.info("Product details layer confirmed. Transferring control to AddCartPage model.")
+        assert pc.is_details_page_opened_successfully() is True, "Product details page did not open."
+        self.logger.info("Product details page verified.")
 
         ap = AddCartPage(self.driver)
-        self.logger.info("Step A: Selecting multiple units and sending add to cart invocation")
         ap.add_to_cart(4) 
 
         toast_success = ap.get_toast_message_text()
-        assert toast_success is not None, "Validation check failed: Success toast notification did not display."
+        assert toast_success is not None, "Toast message not found."
         
         toast_lower = toast_success.lower()
-        
         if "added" in toast_lower or "to cart" in toast_lower or "success" in toast_lower:
-            self.logger.info(f"Step A passed (Fresh Cart State): Items added successfully -> {toast_success}")
+            self.logger.info(f"Product added successfully: {toast_success}")
         elif "sorry" in toast_lower or "stock" in toast_lower or "only" in toast_lower or "available" in toast_lower:
-            self.logger.warning(f"Step A warning (Stale Cart State): Cart already populated from a previous run -> {toast_success}")
+            self.logger.warning(f"Product already in cart or out of stock: {toast_success}")
             assert True 
         else:
-            assert False, f"Validation check failed: Unexpected toast string captured in Step A: {toast_success}"
+            assert False, f"Unexpected toast captured: {toast_success}"
 
     def test_03_verify_cart_boundary_limit(self):
-        """Step 3: Refresh inventory state and execute breach allocation to check system thresholds."""
-        self.logger.info("Executing Step 3: Inventory Boundary Threshold Enforcement Check")
-        
-        self.logger.info("Refreshing browser to synchronize backend cart state session")
+        self.logger.info("Step 3: Verify Cart Boundary Limit")
         self.driver.refresh()
-        
-        self.logger.info("Pausing execution for backend session synchronization...")
         time.sleep(8)
         
         ap = AddCartPage(self.driver)
-        self.logger.info("Step B: Injecting out-of-bounds addition requests to verify inventory limit guards")
         ap.add_to_cart(12) 
         time.sleep(3)
 
         toast_error = ap.get_toast_message_text()
-        assert toast_error is not None, "Validation check failed: Error toast notification did not display for stock overflow."
-        self.logger.info(f"Captured Toast in Step B: {toast_error}")
+        assert toast_error is not None, "Error toast not found for stock overflow."
+        self.logger.info(f"Captured Toast: {toast_error}")
 
         toast_err_lower = toast_error.lower()
-        
         if "sorry" in toast_err_lower or "stock" in toast_err_lower or "only" in toast_err_lower or "available" in toast_err_lower:
-            self.logger.info(f"Step B passed: Stock boundary limit successfully enforced by system -> {toast_error}")
+            self.logger.info(f"Stock limit enforced: {toast_error}")
         elif "added" in toast_err_lower or "success" in toast_err_lower:
-            self.logger.warning(f"System behavior noted: Rapid action latency allowed redundant stash entry -> {toast_error}")
+            self.logger.warning(f"Redundant entry allowed due to latency: {toast_error}")
             assert True 
         else:
-            assert False, f"Validation check failed: System allowed out-of-bounds items or returned invalid message: '{toast_error}'"
+            assert False, f"Invalid message or out-of-bounds items allowed: {toast_error}"
             
-        self.logger.info("AddCartPage inventory boundary stack evaluation completed successfully.")
+        self.logger.info("Cart boundary limit test completed.")

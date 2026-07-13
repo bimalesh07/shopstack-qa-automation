@@ -1,12 +1,9 @@
 import os
 import pytest
-import pytest_html
 from selenium import webdriver
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# Browser setup fixture shared across the test class
 @pytest.fixture(scope="class")
 def setup(request):
     options = webdriver.ChromeOptions()
@@ -18,21 +15,20 @@ def setup(request):
     
     if request.cls is not None:
         request.cls.driver = driver 
+        
     yield driver
-    
     driver.quit()
 
-
-
-# Function-level fixture to clear cookies and reset browser url when explicitly called
 @pytest.fixture(scope="function")
-def fresh_url(request):
-    if hasattr(request.cls, 'driver'):
+def fresh_url(request, setup):
+    if hasattr(request.cls, 'driver') and request.cls.driver is not None:
+        driver = request.cls.driver
         base_url = os.getenv("SHOPSTACK_BASE_URL", "https://shopstack-ecommerce.vercel.app")
-        request.cls.driver.delete_all_cookies()
-        request.cls.driver.get(base_url)
+        driver.delete_all_cookies()
+        driver.get(base_url)
+    yield  
 
-# Pytest hook implementation to capture automated screenshot on UI failure
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
@@ -43,6 +39,8 @@ def pytest_runtest_makereport(item, call):
         xfail = hasattr(report, "wasxfail")
         
         if (report.failed and not xfail) or (report.skipped and xfail):
+            from pytest_html import extras
+            
             file_name = report.nodeid.replace("::", "_").replace(".", "_").replace("/", "_") + ".png"
             screenshot_dir = ".\\Screenshots"
             
@@ -54,11 +52,11 @@ def pytest_runtest_makereport(item, call):
             
             if driver:
                 driver.save_screenshot(file_path)
-                print(f"\n[SCREENSHOT CAPTURED] UI Failure Saved to: {file_path}")
+                print(f"\n UI Failure Saved to: {file_path}")
                 
                 if os.path.exists(file_path):
                     html = f'<div><img src="..\\Screenshots\\{file_name}" alt="screenshot" style="width:304px;height:228px;" ' \
                            f'onclick="window.open(self.src)" align="right"/></div>'
-                    extra.append(pytest_html.extras.html(html))
+                    extra.append(extras.html(html))
                     
         report.extra = extra

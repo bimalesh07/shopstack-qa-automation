@@ -15,16 +15,16 @@ class Test_Register_User_And_Verify_In_Database:
             "password2": "1234567bky"
         }
         
-        # 1. API Endpoint Target Invocation
+        #  API Endpoint Target Invocation
         response = auth_client.Signup(payload, role="customers")
         assert response.status_code == 201, f"Validation check failed: Registration request rejected with status code {response.status_code}"
         
-        # 2. Database Persistence Layer Cross-Verification
+        #Database Persistence Layer Cross-Verification
         sql_query = f"SELECT name FROM users_user WHERE email = '{test_email}';"
         
         # Access database execution framework utilizing the active db_session context
         db_result = DbHelper.execute_select(db_session, sql_query) 
 
-        # Structural Integrity Validation
+        #Structural Integrity Validation
         assert db_result is not None, "Validation check failed: Targeted user record not located inside the database query response."
         assert db_result[0] == "yadavbimalesh", f"Validation check failed: Name property property mismatch. Captured: {db_result[0]}"

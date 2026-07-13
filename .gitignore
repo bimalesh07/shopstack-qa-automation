@@ -15,18 +15,18 @@ env/
 __pycache__/
 *.pyc
 
-# 4. Automation Output (Reports, Screenshots, Logs)
+# Automation Output (Reports, Screenshots, Logs)
 # Hum chahte hain ki folders rahein, lekin unka andar ka maal push na ho
 Reports/*.html
 Reports/*.xml
 ScreenShots/*.png
 Logs/*.log
 
-# 5. IDE Settings (VS Code / PyCharm config)
+#IDE Settings (VS Code / PyCharm config)
 .vscode/
 .idea/
 
-# 6. OS temporary files
+# OS temporary files
 .DS_Store
 Thumbs.db
 
